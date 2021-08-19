@@ -1,0 +1,25 @@
+# EXAMPLE USAGE
+# Refer for explanation to following link:
+# https://github.com/evilmartians/lefthook/blob/master/docs/full_guide.md
+#
+# pre-push:
+#   commands:
+#     packages-audit:
+#       tags: frontend security
+#       run: yarn audit
+#     gems-audit:
+#       tags: backend security
+#       run: bundle audit
+#
+pre-commit:
+  parallel: true
+  commands:
+    eslint:
+      glob: "*.{js,ts,vue}"
+      run: yarn eslint --fix {staged_files}
+    stylelint:
+      glob: "*.{vue,css}"
+      run: yarn stylelint --fix {staged_files}
+    prettier:
+      glob: "*.{js,ts,vue,css,json,yml}"
+      run: yarn prettier --write {staged_files}
