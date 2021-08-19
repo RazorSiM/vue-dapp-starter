@@ -12,11 +12,11 @@ Example of how to work on an Ethereum dApp on Vue3 by fetching some basic data.
 **Metamask** implementation is partial but works fine with a global router guard.
 
 Todo:
-[ ] Better README
-[ ] Implement event listener for account change
-[ ] Implement event listener for network change
-[ ] Implement WalletConnect support
-[ ] Basic smart contract interaction example
+- [ ] Better README
+- [ ] Implement event listener for account change
+- [ ] Implement event listener for network change
+- [ ] Implement WalletConnect support
+- [ ] Basic smart contract interaction example
 
 ## Scaffolding
 
