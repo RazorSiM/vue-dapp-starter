@@ -1,10 +1,22 @@
-# Vite Vue3 Typescript Starter
+# Vue3 dapp starter
 
-My Vite starter template for fast prototyping. If you want to try it:
+My Vite starter template for fast prototyping on web3. If you want to try it:
 
 `degit RazorSiM/vite-vue-ts-starter` 👽
 
 `pnpm install`
+
+# Included
+
+Example of how to work on an Ethereum dApp on Vue3 by fetching some basic data.
+**Metamask** implementation is partial but works fine with a global router guard.
+
+Todo:
+[ ] Better README
+[ ] Implement event listener for account change
+[ ] Implement event listener for network change
+[ ] Implement WalletConnect support
+[ ] Basic smart contract interaction example
 
 ## Scaffolding
 

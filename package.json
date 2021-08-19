@@ -1,7 +1,7 @@
 {
-  "name": "vite-vue-ts-starter",
-  "description": "A starter template for Vue3 running on Vite and Typescript.",
-  "homepage": "https://github.com/RazorSiM/vite-vue-ts-starter",
+  "name": "vue-dapp-starter",
+  "description": "A starter template for a Web3 dapp based on Vue3 running on Vite and Typescript.",
+  "homepage": "https://github.com/RazorSiM/vue-dapp-starter",
   "author": {
     "name": "Simone 'Raz' Colabufalo",
     "email": "me@raz.works",
