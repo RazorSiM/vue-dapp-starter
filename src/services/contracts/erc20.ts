@@ -3,7 +3,7 @@ import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { ContractTransaction } from "@ethersproject/contracts";
 import { Erc20__factory } from "/@/types/chain";
 import { formatUnits } from "@ethersproject/units";
-import { initProvider } from "/@/services/contracts";
+import { initWeb3Provider } from "/@/services/contracts";
 
 /**
  *
@@ -20,7 +20,7 @@ const erc20Approval = async (
   digits: number
 ): Promise<ContractTransaction> => {
   try {
-    const provider = await initProvider();
+    const provider = await initWeb3Provider();
     const ERC20 = Erc20__factory.connect(tokenAddress, provider.getSigner());
     return ERC20.approve(contractAddress, formatUnits(amount, digits));
   } catch (error) {
@@ -35,7 +35,7 @@ const erc20Approval = async (
  */
 const erc20Symbol = async (tokenAddress: string): Promise<string> => {
   try {
-    const provider = await initProvider();
+    const provider = await initWeb3Provider();
     const ERC20 = Erc20__factory.connect(tokenAddress, provider);
     return await ERC20.symbol();
   } catch (error) {
@@ -54,7 +54,7 @@ const erc20Balance = async (
   tokenAddress: string
 ): Promise<BigNumber> => {
   try {
-    const provider = await initProvider();
+    const provider = await initWeb3Provider();
     const ERC20 = Erc20__factory.connect(tokenAddress, provider);
     return await ERC20.balanceOf(walletAddress);
   } catch (error) {

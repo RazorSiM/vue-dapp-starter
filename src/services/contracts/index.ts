@@ -12,7 +12,7 @@ import { getProvider } from "/@/services/wallets/metamask";
  *
  * @returns Inits the Web3Provider by passing an ExternalProvider object or returns an error
  */
-async function initProvider(): Promise<Web3Provider> {
+async function initWeb3Provider(): Promise<Web3Provider> {
   try {
     const provider = await getProvider();
     return new Web3Provider(provider);
@@ -27,7 +27,7 @@ async function initProvider(): Promise<Web3Provider> {
  */
 async function getNetwork(): Promise<Network> {
   try {
-    const provider = await initProvider();
+    const provider = await initWeb3Provider();
     return await provider.getNetwork();
   } catch (error) {
     throw new Error(error);
@@ -41,7 +41,7 @@ async function getNetwork(): Promise<Network> {
  */
 async function lookupAddress(walletAddress: string): Promise<string> {
   try {
-    const provider = await initProvider();
+    const provider = await initWeb3Provider();
     const network = await getNetwork();
     if (network.chainId !== 1) {
       return "";
@@ -65,7 +65,7 @@ async function lookupAddress(walletAddress: string): Promise<string> {
  */
 async function getBlock(block: BlockTag): Promise<Block> {
   try {
-    const provider = await initProvider();
+    const provider = await initWeb3Provider();
     return await provider.getBlock(block);
   } catch (error) {
     throw new Error(error);
@@ -87,7 +87,7 @@ async function getLatestBlockTimestamp(): Promise<number> {
  */
 async function getEthBalance(walletAddress: string): Promise<string> {
   try {
-    const provider = await initProvider();
+    const provider = await initWeb3Provider();
     const response = await provider.getBalance(walletAddress);
     return formatUnits(response);
   } catch (error) {
@@ -96,7 +96,7 @@ async function getEthBalance(walletAddress: string): Promise<string> {
 }
 
 export {
-  initProvider,
+  initWeb3Provider,
   getBlock,
   getLatestBlockTimestamp,
   getEthBalance,
