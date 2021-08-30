@@ -24,7 +24,11 @@ const erc20Approval = async (
     const ERC20 = Erc20__factory.connect(tokenAddress, provider.getSigner());
     return ERC20.approve(contractAddress, formatUnits(amount, digits));
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error while approving the spending amount");
+    }
   }
 };
 
@@ -39,7 +43,11 @@ const erc20Symbol = async (tokenAddress: string): Promise<string> => {
     const ERC20 = Erc20__factory.connect(tokenAddress, provider);
     return await ERC20.symbol();
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error while retrieving the erc20 symbol");
+    }
   }
 };
 
@@ -58,8 +66,30 @@ const erc20Balance = async (
     const ERC20 = Erc20__factory.connect(tokenAddress, provider);
     return await ERC20.balanceOf(walletAddress);
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error while retrieving the erc20 balance");
+    }
   }
 };
 
-export { erc20Approval, erc20Balance, erc20Symbol, formatUnits };
+const erc20Transfer = async (
+  toWalletAddress: string,
+  tokenAddress: string,
+  quantity: BigNumberish
+): Promise<ContractTransaction> => {
+  try {
+    const provider = await initWeb3Provider();
+    const ERC20 = Erc20__factory.connect(tokenAddress, provider);
+    return await ERC20.transfer(toWalletAddress, quantity);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error while transfering the erc20 token");
+    }
+  }
+};
+
+export { erc20Approval, erc20Balance, erc20Symbol, formatUnits, erc20Transfer };

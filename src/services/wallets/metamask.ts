@@ -16,7 +16,11 @@ const getProvider = async (): Promise<ExternalProvider> => {
       throw "There's a problem with your wallet";
     }
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error getting your wallet");
+    }
   }
 };
 
@@ -31,7 +35,11 @@ const getAccounts = async (): Promise<string[]> => {
       method: "eth_accounts",
     });
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error trying to get your accounts[s]");
+    }
   }
 };
 
@@ -46,7 +54,11 @@ const requestAccounts = async (): Promise<string[]> => {
       method: "eth_requestAccounts",
     });
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error during the dApp approval");
+    }
   }
 };
 

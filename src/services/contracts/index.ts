@@ -17,7 +17,11 @@ async function initWeb3Provider(): Promise<Web3Provider> {
     const provider = await getProvider();
     return new Web3Provider(provider);
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error initializing the provider");
+    }
   }
 }
 
@@ -30,7 +34,11 @@ async function getNetwork(): Promise<Network> {
     const provider = await initWeb3Provider();
     return await provider.getNetwork();
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error getting the network");
+    }
   }
 }
 
@@ -54,7 +62,11 @@ async function lookupAddress(walletAddress: string): Promise<string> {
       }
     }
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error getting the ENS name");
+    }
   }
 }
 
@@ -68,7 +80,11 @@ async function getBlock(block: BlockTag): Promise<Block> {
     const provider = await initWeb3Provider();
     return await provider.getBlock(block);
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error getting the block");
+    }
   }
 }
 
@@ -91,7 +107,11 @@ async function getEthBalance(walletAddress: string): Promise<string> {
     const response = await provider.getBalance(walletAddress);
     return formatUnits(response);
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error getting the Eth balance");
+    }
   }
 }
 

@@ -35,7 +35,11 @@ export const useWalletStore = defineStore({
         }
       } catch (error) {
         this.walletType = "";
-        throw new Error(error);
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        } else {
+          throw new Error("Error setting the provider");
+        }
       }
     },
     async setConnected(): Promise<void> {
@@ -54,7 +58,11 @@ export const useWalletStore = defineStore({
           this.ethBalance = "";
         }
       } catch (error) {
-        throw new Error(error);
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        } else {
+          throw new Error("Error checking the connection");
+        }
       }
     },
     async requestAccounts(): Promise<void> {
@@ -66,7 +74,11 @@ export const useWalletStore = defineStore({
         this.walletType = "Metamask";
         this.ethBalance = await getEthBalance(this.address);
       } catch (error) {
-        throw new Error(error);
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        } else {
+          throw new Error("Error approving the dApp");
+        }
       }
     },
   },
