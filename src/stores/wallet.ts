@@ -1,5 +1,6 @@
 import {
   getAccounts,
+  getChainId,
   getProvider,
   requestAccounts,
 } from "/@/services/wallets/metamask";
@@ -12,6 +13,7 @@ export const useWalletStore = defineStore({
   state: () => ({
     connected: false,
     installed: false,
+    chainId: "",
     address: "",
     ens: "",
     walletType: "",
@@ -19,6 +21,22 @@ export const useWalletStore = defineStore({
   }),
   getters: {
     getConnected: (state) => state.connected,
+    getChainName: (state) => {
+      switch (state.chainId) {
+        case "":
+          return "Unknown";
+        case "0x1":
+          return "Mainnet";
+        case "0x3":
+          return "Ropsten";
+        case "0x4":
+          return "Rinkeby";
+        case "0x5":
+          return "Goerli";
+        case "0x2a":
+          return "Kovan";
+      }
+    },
     getAddress: (state) => state.address,
     getShortAddress: (state) => state.address.substring(0, 7) + "...",
     getEns: (state) => state.ens,
@@ -45,8 +63,16 @@ export const useWalletStore = defineStore({
         }
       }
     },
+    async setChainId(): Promise<void> {
+      try {
+        this.chainId = await getChainId();
+      } catch (error) {
+        this.chainId = "";
+      }
+    },
     async setConnected(): Promise<void> {
       try {
+        await this.setChainId();
         const accounts = await getAccounts();
         if (accounts.length > 0) {
           this.address = accounts[0];
@@ -70,6 +96,7 @@ export const useWalletStore = defineStore({
     },
     async requestAccounts(): Promise<void> {
       try {
+        await this.setChainId();
         const accounts = await requestAccounts();
         this.address = accounts[0];
         this.ens = await lookupAddress(accounts[0]);

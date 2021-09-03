@@ -42,6 +42,19 @@ const getAccounts = async (): Promise<string[]> => {
   }
 };
 
+const getChainId = async (): Promise<string> => {
+  try {
+    const provider = await getProvider();
+    return await provider.request?.({ method: "eth_chainId" });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error getting the chain id");
+    }
+  }
+};
+
 /**
  *
  * @returns return an array of accounts[the one selected] if the app has the permission to access the wallet. If not, will fire up the permission request and then return the array of accounts
@@ -61,4 +74,4 @@ const requestAccounts = async (): Promise<string[]> => {
   }
 };
 
-export { getProvider, getAccounts, requestAccounts };
+export { getProvider, getAccounts, requestAccounts, getChainId };
