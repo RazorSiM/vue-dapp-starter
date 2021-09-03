@@ -11,6 +11,7 @@ export const useWalletStore = defineStore({
   id: "wallet",
   state: () => ({
     connected: false,
+    installed: false,
     address: "",
     ens: "",
     walletType: "",
@@ -28,6 +29,7 @@ export const useWalletStore = defineStore({
     async setProvider(): Promise<void> {
       try {
         const provider = await getProvider();
+        this.installed = true;
         if (provider.isMetaMask) {
           this.walletType = "Metamask";
         } else {
@@ -35,6 +37,7 @@ export const useWalletStore = defineStore({
         }
       } catch (error) {
         this.walletType = "";
+        this.installed = false;
         if (error instanceof Error) {
           throw new Error(error.message);
         } else {

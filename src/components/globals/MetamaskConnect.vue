@@ -25,7 +25,9 @@ import { useWalletStore } from "/@/stores/wallet";
 
 const walletStore = useWalletStore();
 let buttonText = $computed(() => {
-  if (walletStore.getAddress !== "") {
+  if (walletStore.installed === false) {
+    return "Install Metamask";
+  } else if (walletStore.getAddress !== "") {
     return walletStore.getEns !== ""
       ? walletStore.getEns
       : walletStore.getShortAddress;

@@ -12,9 +12,8 @@ const getProvider = async (): Promise<ExternalProvider> => {
     })) as ExternalProvider;
     if (provider !== null) {
       return provider;
-    } else {
-      throw "There's a problem with your wallet";
     }
+    throw new Error("Error getting your Wallet");
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);

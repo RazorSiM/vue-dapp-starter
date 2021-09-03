@@ -18,11 +18,21 @@
         :to="{ name: 'Home' }"
         >Home</router-link
       >
-      <router-link
-        :class="route.name === 'Account' ? activeClasses : inactiveClasses"
-        :to="{ name: 'Account' }"
-        >Account</router-link
-      >
+      <router-link v-slot="{ navigate }" custom :to="{ name: 'Account' }">
+        <button
+          class="
+            focus:outline-none
+            disabled:(cursor-not-allowed
+            text-gray-300)
+            dark:disabled:(text-gray-800)
+          "
+          :class="route.name === 'Account' ? activeClasses : inactiveClasses"
+          :disabled="!walletStore.connected || !walletStore.installed"
+          @click="navigate"
+        >
+          Account
+        </button>
+      </router-link>
     </div>
 
     <div class="justify-self-end flex items-center space-x-5">
@@ -35,6 +45,16 @@
 import DarkToggle from "/@/components/globals/DarkToggle.vue";
 import MetamaskConnect from "/@/components/globals/MetamaskConnect.vue";
 import { useRoute } from "vue-router";
+import { useWalletStore } from "/@/stores/wallet";
+import { onMounted } from "vue";
+
+const walletStore = useWalletStore();
+onMounted(async () => {
+  await walletStore.setProvider();
+  if (walletStore.installed) {
+    await walletStore.setConnected();
+  }
+});
 
 const route = useRoute();
 const activeClasses = `font-bold dark:(text-white)`;

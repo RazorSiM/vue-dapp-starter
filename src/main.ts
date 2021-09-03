@@ -6,7 +6,7 @@ import BaseLayout from "./layouts/Base.vue";
 import EmptyLayout from "./layouts/Empty.vue";
 import { createApp } from "vue";
 import { pinia } from "./stores";
-import router from "/@/router";
+import router from "/@/routes";
 
 const app = createApp(App);
 app.use(router);
