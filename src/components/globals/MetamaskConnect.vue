@@ -28,7 +28,7 @@ let buttonText = $computed(() => {
   if (walletStore.installed === false) {
     return "Install Metamask";
   } else if (walletStore.getAddress !== "") {
-    return walletStore.getEns !== ""
+    return walletStore.getEns
       ? walletStore.getEns
       : walletStore.getShortAddress;
   } else {
