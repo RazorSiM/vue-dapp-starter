@@ -74,15 +74,15 @@ const erc20Balance = async (
   }
 };
 
-const erc20Transfer = async (
+const erc20EstimateTransfer = async (
   toWalletAddress: string,
   tokenAddress: string,
   quantity: BigNumberish
-): Promise<ContractTransaction> => {
+): Promise<BigNumber> => {
   try {
     const provider = await initWeb3Provider();
     const ERC20 = Erc20__factory.connect(tokenAddress, provider);
-    return await ERC20.transfer(toWalletAddress, quantity);
+    return await ERC20.estimateGas.transfer(toWalletAddress, quantity);
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -92,4 +92,10 @@ const erc20Transfer = async (
   }
 };
 
-export { erc20Approval, erc20Balance, erc20Symbol, formatUnits, erc20Transfer };
+export {
+  erc20Approval,
+  erc20Balance,
+  erc20Symbol,
+  formatUnits,
+  erc20EstimateTransfer,
+};
