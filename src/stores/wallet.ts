@@ -3,8 +3,8 @@ import {
   getChainId,
   getProvider,
   requestAccounts,
-} from "/@/services/wallets/metamask";
-import { getEthBalance, lookupAddress } from "/@/services/contracts";
+} from "~/services/wallets/metamask";
+import { getEthBalance, lookupAddress } from "~/services/contracts";
 
 import { defineStore } from "pinia";
 

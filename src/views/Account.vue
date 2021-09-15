@@ -73,10 +73,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useWalletStore } from "/@/stores/wallet";
+import { useWalletStore } from "~/stores/wallet";
 import { onMounted } from "vue";
-import { getBlock } from "/@/services/contracts";
-import { erc20EstimateTransfer } from "/@/services/contracts/erc20";
+import { getBlock } from "~/services/contracts";
+import { erc20EstimateTransfer } from "~/services/contracts/erc20";
 import { BigNumberish } from "ethers";
 const walletStore = useWalletStore();
 let Block = $ref(0);

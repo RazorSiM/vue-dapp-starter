@@ -6,7 +6,7 @@ import {
 } from "@ethersproject/providers";
 
 import { formatUnits } from "@ethersproject/units";
-import { getProvider } from "/@/services/wallets/metamask";
+import { getProvider } from "~/services/wallets/metamask";
 
 /**
  *

@@ -20,7 +20,6 @@
   </div>
 </template>
 <setup lang="ts">
-import { defineComponent } from "vue";
 export default defineComponent({
   component: {
     name: "BaseLayout",
@@ -28,5 +27,5 @@ export default defineComponent({
 });
 </setup>
 <script lang="ts" setup>
-import MainHeader from "/@/components/blocks/Header.vue";
+import MainHeader from "~/components/blocks/Header.vue";
 </script>

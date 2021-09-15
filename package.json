@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@arkweid/lefthook": "^0.7.6",
+    "@iconify/json": "^1.1.402",
     "@typechain/ethers-v5": "^7.1.0",
     "@types/node": "^16.9.1",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
@@ -56,6 +57,8 @@
     "stylelint-config-standard": "^22.0.0",
     "typechain": "^5.1.2",
     "typescript": "^4.4.3",
+    "unplugin-auto-import": "^0.4.5",
+    "unplugin-icons": "^0.11.2",
     "vite": "^2.5.7",
     "vite-plugin-windicss": "^1.4.2",
     "vue-eslint-parser": "^7.10.0",

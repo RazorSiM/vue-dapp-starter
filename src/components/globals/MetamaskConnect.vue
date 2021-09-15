@@ -21,7 +21,7 @@
   </button>
 </template>
 <script setup lang="ts">
-import { useWalletStore } from "/@/stores/wallet";
+import { useWalletStore } from "~/stores/wallet";
 
 const walletStore = useWalletStore();
 let buttonText = $computed(() => {

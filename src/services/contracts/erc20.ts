@@ -1,9 +1,9 @@
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 
 import { ContractTransaction } from "@ethersproject/contracts";
-import { Erc20__factory } from "/@/types/chain";
+import { Erc20__factory } from "~/types/chain";
 import { formatUnits } from "@ethersproject/units";
-import { initWeb3Provider } from "/@/services/contracts";
+import { initWeb3Provider } from "~/services/contracts";
 
 /**
  *

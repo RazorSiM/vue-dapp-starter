@@ -42,11 +42,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import DarkToggle from "/@/components/globals/DarkToggle.vue";
-import MetamaskConnect from "/@/components/globals/MetamaskConnect.vue";
-import { useRoute } from "vue-router";
-import { useWalletStore } from "/@/stores/wallet";
-import { onMounted } from "vue";
+import DarkToggle from "~/components/globals/DarkToggle.vue";
+import MetamaskConnect from "~/components/globals/MetamaskConnect.vue";
+import { useWalletStore } from "~/stores/wallet";
 
 const walletStore = useWalletStore();
 onMounted(async () => {
