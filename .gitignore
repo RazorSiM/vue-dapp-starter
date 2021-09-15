@@ -9,3 +9,4 @@ package-lock.json
 .pnpm-debug.log
 src/types/chain
 .env
+auto-imports.d.ts
