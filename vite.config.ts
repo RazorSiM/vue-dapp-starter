@@ -7,9 +7,7 @@ import vue from "@vitejs/plugin-vue";
 export default defineConfig({
   plugins: [
     vue({
-      script: {
-        refTransform: true,
-      },
+      refTransform: true,
     }),
     WindiCSS(),
   ],
