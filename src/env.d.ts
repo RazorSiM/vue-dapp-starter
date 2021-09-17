@@ -2,5 +2,5 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  VITE_INFURA_ID: string;
+  VITE_ALCHEMY_KEY: string;
 }
