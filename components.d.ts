@@ -2,13 +2,13 @@
 // We suggest you to commit this file into source control
 // Read more: https://github.com/vuejs/vue-next/pull/3399
 
-declare module 'vue' {
+declare module "vue" {
   export interface GlobalComponents {
-    DarkToggle: typeof import('./src/components/globals/DarkToggle.vue')['default']
-    Header: typeof import('./src/components/blocks/Header.vue')['default']
-    MetamaskConnect: typeof import('./src/components/globals/MetamaskConnect.vue')['default']
-    SampleWalletData: typeof import('./src/components/cards/SampleWalletData.vue')['default']
+    DarkToggle: typeof import("./src/components/globals/DarkToggle.vue")["default"];
+    Header: typeof import("./src/components/blocks/Header.vue")["default"];
+    MetamaskConnect: typeof import("./src/components/globals/MetamaskConnect.vue")["default"];
+    SampleWalletData: typeof import("./src/components/cards/SampleWalletData.vue")["default"];
   }
 }
 
-export { }
+export {};
