@@ -31,7 +31,7 @@
     "@ethersproject/providers": "^5.4.5",
     "@ethersproject/units": "^5.4.0",
     "@metamask/detect-provider": "^1.2.0",
-    "@vueuse/core": "^6.4.0",
+    "@vueuse/core": "^6.4.1",
     "axios": "^0.21.1",
     "dayjs": "^1.10.7",
     "ethers": "^5.4.7",
