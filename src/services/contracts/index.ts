@@ -1,4 +1,5 @@
 import {
+  AlchemyProvider,
   Block,
   BlockTag,
   Network,
@@ -7,6 +8,7 @@ import {
 
 import { formatUnits } from "@ethersproject/units";
 import { getProvider } from "~/services/wallets/metamask";
+import { isAddress } from "@ethersproject/address";
 
 /**
  *
@@ -27,11 +29,28 @@ async function initWeb3Provider(): Promise<Web3Provider> {
 
 /**
  *
+ * @returns Inits the Web3Provider by passing an ExternalProvider object or returns an error
+ */
+async function initAlchemyProvider(): Promise<AlchemyProvider> {
+  try {
+    const apiKey = import.meta.env.VITE_ALCHEMY_KEY;
+    return new AlchemyProvider("homestead", apiKey);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error initializing the provider");
+    }
+  }
+}
+
+/**
+ *
  * @returns Returns a Network object
  */
 async function getNetwork(): Promise<Network> {
   try {
-    const provider = await initWeb3Provider();
+    const provider = await initAlchemyProvider();
     return await provider.getNetwork();
   } catch (error) {
     if (error instanceof Error) {
@@ -49,17 +68,21 @@ async function getNetwork(): Promise<Network> {
  */
 async function lookupAddress(walletAddress: string): Promise<string> {
   try {
-    const provider = await initWeb3Provider();
-    const network = await getNetwork();
-    if (network.chainId !== 1) {
-      return "";
-    } else {
-      const ENS = provider.lookupAddress(walletAddress);
-      if (ENS !== null) {
-        return ENS;
-      } else {
+    if (isAddress(walletAddress)) {
+      const provider = await initAlchemyProvider();
+      const network = await getNetwork();
+      if (network.chainId !== 1) {
         return "";
+      } else {
+        const ENS = provider.lookupAddress(walletAddress);
+        if (ENS !== null) {
+          return ENS;
+        } else {
+          return "";
+        }
       }
+    } else {
+      return "";
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -77,7 +100,7 @@ async function lookupAddress(walletAddress: string): Promise<string> {
  */
 async function getBlock(block: BlockTag): Promise<Block> {
   try {
-    const provider = await initWeb3Provider();
+    const provider = await initAlchemyProvider();
     return await provider.getBlock(block);
   } catch (error) {
     if (error instanceof Error) {
@@ -103,9 +126,13 @@ async function getLatestBlockTimestamp(): Promise<number> {
  */
 async function getEthBalance(walletAddress: string): Promise<string> {
   try {
-    const provider = await initWeb3Provider();
-    const response = await provider.getBalance(walletAddress);
-    return formatUnits(response);
+    if (isAddress(walletAddress) || walletAddress.endsWith(".eth")) {
+      const provider = await initAlchemyProvider();
+      const response = await provider.getBalance(walletAddress);
+      return formatUnits(response);
+    } else {
+      return "Not a wallet address";
+    }
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -122,4 +149,5 @@ export {
   getEthBalance,
   lookupAddress,
   getNetwork,
+  initAlchemyProvider,
 };

@@ -1,9 +1,9 @@
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
+import { initAlchemyProvider, initWeb3Provider } from "~/services/contracts";
 
 import { ContractTransaction } from "@ethersproject/contracts";
 import { Erc20__factory } from "~/types/chain";
 import { formatUnits } from "@ethersproject/units";
-import { initWeb3Provider } from "~/services/contracts";
 
 /**
  *
@@ -39,7 +39,7 @@ const erc20Approval = async (
  */
 const erc20Symbol = async (tokenAddress: string): Promise<string> => {
   try {
-    const provider = await initWeb3Provider();
+    const provider = await initAlchemyProvider();
     const ERC20 = Erc20__factory.connect(tokenAddress, provider);
     return await ERC20.symbol();
   } catch (error) {
@@ -62,7 +62,7 @@ const erc20Balance = async (
   tokenAddress: string
 ): Promise<BigNumber> => {
   try {
-    const provider = await initWeb3Provider();
+    const provider = await initAlchemyProvider();
     const ERC20 = Erc20__factory.connect(tokenAddress, provider);
     return await ERC20.balanceOf(walletAddress);
   } catch (error) {
@@ -80,7 +80,7 @@ const erc20EstimateTransfer = async (
   quantity: BigNumberish
 ): Promise<BigNumber> => {
   try {
-    const provider = await initWeb3Provider();
+    const provider = await initAlchemyProvider();
     const ERC20 = Erc20__factory.connect(tokenAddress, provider);
     return await ERC20.estimateGas.transfer(toWalletAddress, quantity);
   } catch (error) {

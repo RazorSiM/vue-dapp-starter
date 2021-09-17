@@ -12,7 +12,7 @@
       p-4
     "
   >
-    <main-header />
+    <Header />
 
     <div class="container mx-auto p-10">
       <slot />
@@ -26,6 +26,3 @@ export default defineComponent({
   },
 });
 </setup>
-<script lang="ts" setup>
-import MainHeader from "~/components/blocks/Header.vue";
-</script>
