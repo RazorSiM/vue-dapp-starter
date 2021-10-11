@@ -48,7 +48,7 @@
     "@typescript-eslint/parser": "^4.32.0",
     "@vitejs/plugin-vue": "^1.9.2",
     "@vue/compiler-sfc": "^3.2.19",
-    "eslint": "^7.32.0",
+    "eslint": "^8.0.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-vue": "^7.18.0",
     "prettier": "^2.4.1",
