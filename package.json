@@ -32,7 +32,7 @@
     "@ethersproject/units": "^5.4.0",
     "@metamask/detect-provider": "^1.2.0",
     "@vueuse/core": "^6.5.3",
-    "axios": "^0.22.0",
+    "axios": "^0.23.0",
     "dayjs": "^1.10.7",
     "ethers": "^5.4.7",
     "pinia": "^2.0.0-rc.9",
