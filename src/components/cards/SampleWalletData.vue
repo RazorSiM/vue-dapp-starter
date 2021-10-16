@@ -28,7 +28,7 @@
         border-gray-900
         text-opacity-100)
       "
-      placeholder="insert a wallet address here"
+      placeholder="input a wallet address here"
     />
     <div v-if="status === 'RUNNING'" class="mt-6">...LOADING...</div>
     <div v-if="status === 'ERROR'" class="mt-6">ERROR FETCHING DATA</div>
