@@ -1,18 +1,7 @@
 <template>
-  <div
-    class="
-      flex
-      rounded-full
-      items-center
-      justify-between
-      px-5
-      py-3
-      bg-gray-100
-      shadow-lg
-      dark:(bg-gray-700)
-    "
-  >
+  <div class="flex items-center justify-between px-5 py-3">
     <div class="flex items-center justify-start space-x-5">
+      <DarkToggle />
       <router-link
         :class="route.name === 'Home' ? activeClasses : inactiveClasses"
         :to="{ name: 'Home' }"
@@ -35,15 +24,12 @@
       </router-link>
     </div>
 
-    <div class="justify-self-end flex items-center space-x-5">
-      <dark-toggle />
-      <metamask-connect />
+    <div class="justify-self-end flex items-center space-x-2">
+      <MetamaskConnect />
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import DarkToggle from "~/components/globals/DarkToggle.vue";
-import MetamaskConnect from "~/components/globals/MetamaskConnect.vue";
 import { useWalletStore } from "~/stores/wallet";
 
 const walletStore = useWalletStore();

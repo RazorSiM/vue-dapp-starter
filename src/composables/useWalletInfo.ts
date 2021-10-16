@@ -15,7 +15,7 @@ const Status = {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function useEthereum(walletAddress: string | Ref<string>) {
+export function useWalletInfo(walletAddress: string | Ref<string>) {
   const status = ref(Status.IDLE);
   const network = ref();
 
@@ -95,26 +95,14 @@ export function useEthereum(walletAddress: string | Ref<string>) {
     }
   }
 
-  async function refetchNetwork() {
-    await getNetwork();
-  }
-  async function refetchEthBalance() {
-    await getEthBalance();
-  }
-  async function refetchLatestBlockTimestamp() {
-    await getLatestBlockTimestamp();
-  }
-  async function refetchEnsAddress() {
-    await getEnsAddress();
-  }
-
   if (isRef(walletAddress)) {
     debouncedWatch(
       walletAddress,
       async () => {
-        await refetchEthBalance();
-        await refetchEnsAddress();
-        await refetchLatestBlockTimestamp();
+        await getNetwork();
+        await getEthBalance();
+        await getLatestBlockTimestamp();
+        await getEnsAddress();
       },
       { debounce: 1000 }
     );
@@ -126,9 +114,9 @@ export function useEthereum(walletAddress: string | Ref<string>) {
     ethBalance,
     latestBlockTimestamp,
     ensAddress,
-    refetchNetwork,
-    refetchEthBalance,
-    refetchLatestBlockTimestamp,
-    refetchEnsAddress,
+    getLatestBlockTimestamp,
+    getNetwork,
+    getEthBalance,
+    getEnsAddress,
   };
 }

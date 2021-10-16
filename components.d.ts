@@ -4,6 +4,7 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    Avatar: typeof import('./src/components/globals/Avatar.vue')['default']
     DarkToggle: typeof import('./src/components/globals/DarkToggle.vue')['default']
     Header: typeof import('./src/components/blocks/Header.vue')['default']
     MetamaskConnect: typeof import('./src/components/globals/MetamaskConnect.vue')['default']

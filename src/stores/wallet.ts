@@ -4,9 +4,14 @@ import {
   getProvider,
   requestAccounts,
 } from "~/services/wallets/metamask";
-import { getEthBalance, lookupAddress } from "~/services/contracts";
+import {
+  getAvatarUri,
+  getEthBalance,
+  lookupAddress,
+} from "~/services/contracts";
 
 import { defineStore } from "pinia";
+import { getAvatarImageUrl } from "~/helpers/ensAvatar";
 
 export const useWalletStore = defineStore({
   id: "wallet",
@@ -16,6 +21,7 @@ export const useWalletStore = defineStore({
     chainId: "",
     address: "",
     ens: "",
+    avatar: "",
     walletType: "",
     ethBalance: "",
   }),
@@ -38,8 +44,12 @@ export const useWalletStore = defineStore({
       }
     },
     getAddress: (state) => state.address,
-    getShortAddress: (state) => state.address.substring(0, 7) + "...",
+    getShortAddress: (state) =>
+      state.address !== ""
+        ? state.address.substring(0, 6) + "...." + state.address.substring(38)
+        : "",
     getEns: (state) => state.ens,
+    getAvatar: (state) => state.avatar,
     getEthBalance: (state) => parseFloat(state.ethBalance).toFixed(3),
     getWalletType: (state) => state.walletType,
   },
@@ -77,6 +87,13 @@ export const useWalletStore = defineStore({
         if (accounts.length > 0) {
           this.address = accounts[0];
           this.ens = await lookupAddress(accounts[0]);
+          this.ens !== ""
+            ? (this.avatar = await getAvatarImageUrl(
+                await getAvatarUri(this.ens),
+                this.ens
+              ))
+            : (this.avatar = "");
+
           this.connected = true;
           this.walletType = "Metamask";
           this.ethBalance = await getEthBalance(this.address);

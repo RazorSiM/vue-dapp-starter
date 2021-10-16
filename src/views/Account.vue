@@ -19,12 +19,24 @@
       v-model="TokenAddress"
       class="
         py-1
-        px-2
-        dark:(bg-gray-600
-        text-gray-200)
-        bg-gray-100
-        text-gray-200
+        pl-2
         rounded-lg
+        w-full
+        text-opacity-40
+        transition
+        bg-light-900
+        focus:(outline-none
+        bg-light-700
+        border-light-900
+        text-opacity-100)
+        dark:(
+        bg-gray-900
+        text-white
+        border-2 border-gray-800)
+        dark:focus:(outline-none
+        bg-gray-800
+        border-gray-900
+        text-opacity-100)
       "
       type="text"
       placeholder="token address"
@@ -33,12 +45,24 @@
       v-model="DestionationWallet"
       class="
         py-1
-        px-2
-        dark:(bg-gray-600
-        text-gray-200)
-        bg-gray-100
-        text-gray-200
+        pl-2
         rounded-lg
+        w-full
+        text-opacity-40
+        transition
+        bg-light-900
+        focus:(outline-none
+        bg-light-700
+        border-light-900
+        text-opacity-100)
+        dark:(
+        bg-gray-900
+        text-white
+        border-2 border-gray-800)
+        dark:focus:(outline-none
+        bg-gray-800
+        border-gray-900
+        text-opacity-100)
       "
       type="text"
       placeholder="wallet address"
@@ -47,12 +71,24 @@
       v-model="QuantityToTransfer"
       class="
         py-1
-        px-2
-        dark:(bg-gray-600
-        text-gray-200)
-        bg-gray-100
-        text-gray-200
+        pl-2
         rounded-lg
+        w-full
+        text-opacity-40
+        transition
+        bg-light-900
+        focus:(outline-none
+        bg-light-700
+        border-light-900
+        text-opacity-100)
+        dark:(
+        bg-gray-900
+        text-white
+        border-2 border-gray-800)
+        dark:focus:(outline-none
+        bg-gray-800
+        border-gray-900
+        text-opacity-100)
       "
       type="text"
       placeholder="quantity"

@@ -29,12 +29,11 @@ async function initWeb3Provider(): Promise<Web3Provider> {
 
 /**
  *
- * @returns Inits the Web3Provider by passing an ExternalProvider object or returns an error
+ * @returns Inits the Alchemy Provider
  */
 async function initAlchemyProvider(): Promise<AlchemyProvider> {
   try {
-    const apiKey = import.meta.env.VITE_ALCHEMY_KEY;
-    return new AlchemyProvider("homestead", apiKey);
+    return new AlchemyProvider("homestead", import.meta.env.VITE_ALCHEMY_KEY);
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -74,7 +73,7 @@ async function lookupAddress(walletAddress: string): Promise<string> {
       if (network.chainId !== 1) {
         return "";
       } else {
-        const ENS = provider.lookupAddress(walletAddress);
+        const ENS = await provider.lookupAddress(walletAddress);
         if (ENS !== null) {
           return ENS;
         } else {
@@ -100,7 +99,7 @@ async function lookupAddress(walletAddress: string): Promise<string> {
  */
 async function getBlock(block: BlockTag): Promise<Block> {
   try {
-    const provider = await initAlchemyProvider();
+    const provider = await initWeb3Provider();
     return await provider.getBlock(block);
   } catch (error) {
     if (error instanceof Error) {
@@ -127,7 +126,7 @@ async function getLatestBlockTimestamp(): Promise<number> {
 async function getEthBalance(walletAddress: string): Promise<string> {
   try {
     if (isAddress(walletAddress) || walletAddress.endsWith(".eth")) {
-      const provider = await initAlchemyProvider();
+      const provider = await initWeb3Provider();
       const response = await provider.getBalance(walletAddress);
       return formatUnits(response);
     } else {
@@ -142,6 +141,31 @@ async function getEthBalance(walletAddress: string): Promise<string> {
   }
 }
 
+async function getAvatarUri(ensOrAddress: string): Promise<string> {
+  try {
+    const provider = await initAlchemyProvider();
+    let ensName = "";
+    if (isAddress(ensOrAddress)) {
+      ensName = await lookupAddress(ensOrAddress);
+    } else {
+      ensName = ensOrAddress;
+    }
+    const resolver = await provider.getResolver(ensName);
+    const avatarUri = await resolver.getText("avatar");
+    if (avatarUri && avatarUri.length > 0) {
+      return avatarUri;
+    } else {
+      return "";
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error getting the avatar uri");
+    }
+  }
+}
+
 export {
   initWeb3Provider,
   getBlock,
@@ -150,4 +174,5 @@ export {
   lookupAddress,
   getNetwork,
   initAlchemyProvider,
+  getAvatarUri,
 };
