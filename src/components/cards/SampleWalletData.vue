@@ -33,7 +33,7 @@
     <div v-if="status === 'RUNNING'" class="mt-6">...LOADING...</div>
     <div v-if="status === 'ERROR'" class="mt-6">ERROR FETCHING DATA</div>
     <div v-if="status === 'SUCCESS'" class="flex flex-col space-y-3 mt-6">
-      <p>Network: {{ network }}</p>
+      <p>Network: {{ network.name }}</p>
       <p>Eth Balance: {{ ethBalance }}</p>
       <p>Latest Block: {{ latestBlockTimestamp }}</p>
       <p>ENS: {{ ensAddress }}</p>

@@ -112,7 +112,6 @@ export function useEthereum(walletAddress: string | Ref<string>) {
     debouncedWatch(
       walletAddress,
       async () => {
-        console.log("ohsdf");
         await refetchEthBalance();
         await refetchEnsAddress();
         await refetchLatestBlockTimestamp();
