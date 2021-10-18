@@ -2,7 +2,7 @@
 
 My Vite starter template for fast prototyping on web3. If you want to try it:
 
-`degit RazorSiM/vite-vue-ts-starter` 👽
+`degit RazorSiM/vue-dapp-starter` 👽
 
 `pnpm install`
 
