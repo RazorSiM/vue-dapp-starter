@@ -12,6 +12,7 @@
       dark:(bg-gray-800)
     "
   >
+    <h1 class="mb-3">Wallet Info Card</h1>
     <input
       v-model="walletAddress"
       type="text"
@@ -30,10 +31,10 @@
         dark:(
         bg-gray-900
         text-white
-        border-2 border-gray-800)
+        )
         dark:focus:(outline-none
-        bg-gray-800
-        border-gray-900
+        ring-2 ring-gray-900
+        bg-gray-700
         text-opacity-100)
       "
       placeholder="input a wallet address here"
@@ -49,15 +50,27 @@
         alt="ENS Avatar"
       />
       <img
-        v-else
+        v-if="!image && blockie"
         class="h-20 w-20 rounded-full"
         :src="blockie"
         alt="Blockie Avatar"
       />
-      <p>Network: {{ network.name }}</p>
-      <p>Eth Balance: {{ ethBalance }}</p>
-      <p>Latest Block: {{ latestBlockTimestamp }}</p>
-      <p>ENS: {{ ensAddress }}</p>
+      <p>
+        Network:
+        <span class="font-bold text-teal-400">{{ network?.name }}</span>
+      </p>
+      <p>
+        Eth Balance:
+        <span class="font-bold text-teal-400">{{ ethBalance }}</span>
+      </p>
+      <p>
+        Latest Block:<span class="font-bold text-teal-400">{{
+          latestBlockTimestamp
+        }}</span>
+      </p>
+      <p>
+        ENS: <span class="font-bold text-teal-400">{{ ensAddress }}</span>
+      </p>
     </div>
   </div>
 </template>
@@ -65,14 +78,29 @@
 import { useWalletInfo } from "~/composables/useWalletInfo";
 import { useEnsAvatar } from "~/composables/useEnsAvatar";
 import makeBlockie from "ethereum-blockies-base64";
-let blockie = $ref("");
+let blockie = $ref<string>();
 let walletAddress = ref("");
 
-const { status, network, ethBalance, latestBlockTimestamp, ensAddress } =
-  useWalletInfo(walletAddress);
+const {
+  status,
+  network,
+  ethBalance,
+  latestBlockTimestamp,
+  ensAddress,
+  getNetwork,
+  getLatestBlockTimestamp,
+} = useWalletInfo(walletAddress);
 const { image } = useEnsAvatar(walletAddress);
 
-watch(walletAddress, () => {
-  blockie = makeBlockie(unref(walletAddress));
+debouncedWatch(
+  walletAddress,
+  () => {
+    blockie = makeBlockie(unref(walletAddress));
+  },
+  { debounce: 1000 }
+);
+onMounted(async () => {
+  await getNetwork();
+  await getLatestBlockTimestamp();
 });
 </script>

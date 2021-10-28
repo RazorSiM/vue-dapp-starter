@@ -152,6 +152,7 @@ const getAvatarImageUrl = async (
       const imageData = await $fetch(
         getGatewayUrl(tokenUri, BigNumber.from(tokenId).toString())
       );
+
       return getGatewayUrl(imageData.image);
     } catch (error) {
       if (error instanceof Error) {

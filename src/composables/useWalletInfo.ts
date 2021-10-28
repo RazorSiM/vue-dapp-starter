@@ -5,7 +5,9 @@ import {
   lookupAddress as _lookupAddress,
 } from "~/services/contracts";
 
+import type { Network } from "@ethersproject/providers";
 import { Ref } from "vue";
+import { isAddress } from "@ethersproject/address";
 
 const Status = {
   IDLE: "IDLE",
@@ -17,12 +19,12 @@ const Status = {
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function useWalletInfo(walletAddress: string | Ref<string>) {
   const status = ref(Status.IDLE);
-  const network = ref();
+  const network = ref<Network>();
 
-  const ethBalance = ref();
+  const ethBalance = ref<string>();
 
-  const latestBlockTimestamp = ref();
-  const ensAddress = ref();
+  const latestBlockTimestamp = ref<number>();
+  const ensAddress = ref<string>();
 
   async function getNetwork() {
     status.value = Status.RUNNING;
@@ -102,7 +104,10 @@ export function useWalletInfo(walletAddress: string | Ref<string>) {
         await getNetwork();
         await getEthBalance();
         await getLatestBlockTimestamp();
-        await getEnsAddress();
+        ensAddress.value = "not a valid address";
+        if (isAddress(unref(walletAddress))) {
+          await getEnsAddress();
+        }
       },
       { debounce: 1000 }
     );

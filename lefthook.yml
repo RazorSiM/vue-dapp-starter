@@ -18,7 +18,7 @@ pre-commit:
       glob: "*.{js,ts,vue}"
       run: yarn eslint --fix {staged_files}
     stylelint:
-      glob: "*.{vue,css}"
+      glob: "*.{css}"
       run: yarn stylelint --fix {staged_files}
     prettier:
       glob: "*.{js,ts,vue,css,json,yml}"
