@@ -3,6 +3,7 @@ import {
   Block,
   BlockTag,
   Network,
+  Resolver,
   Web3Provider,
 } from "@ethersproject/providers";
 
@@ -140,7 +141,19 @@ async function getEthBalance(walletAddress: string): Promise<string> {
     }
   }
 }
+async function getResolver(ensName: string): Promise<Resolver> {
+  try {
+    const provider = await initAlchemyProvider();
 
+    return await provider.getResolver(ensName);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error retrieving the resolver");
+    }
+  }
+}
 async function getAvatarUri(ensOrAddress: string): Promise<string> {
   try {
     const provider = await initAlchemyProvider();
@@ -175,4 +188,5 @@ export {
   getNetwork,
   initAlchemyProvider,
   getAvatarUri,
+  getResolver,
 };
