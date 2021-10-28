@@ -19,7 +19,7 @@
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
     "generate-types": "typechain --target ethers-v5 --out-dir src/types/chain 'src/types/abis/*.json'",
-    "postinstall": "npm run generate-types"
+    "postinstall": "npm run generate-types && cp .env.example .env"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.5.0",
