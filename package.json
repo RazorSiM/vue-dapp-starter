@@ -31,7 +31,7 @@
     "@ethersproject/providers": "^5.5.0",
     "@ethersproject/units": "^5.5.0",
     "@metamask/detect-provider": "^1.2.0",
-    "@vueuse/core": "^6.7.4",
+    "@vueuse/core": "^7.0.1",
     "dayjs": "^1.10.7",
     "ethereum-blockies-base64": "^1.0.2",
     "ethers": "^5.5.1",
