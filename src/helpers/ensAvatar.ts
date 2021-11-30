@@ -1,7 +1,7 @@
 import { $fetch } from "ohmyfetch";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Contract } from "@ethersproject/contracts";
-import { initAlchemyProvider } from "~/services/contracts";
+import { initDefaultProvider } from "~/services/contracts";
 import { isAddress } from "@ethersproject/address";
 
 const erc721Abi = [
@@ -103,12 +103,15 @@ const getAvatarImageUrl = async (
   uri: string,
   ensOrAddress: string
 ): Promise<string> => {
-  const provider = await initAlchemyProvider();
+  const provider = await initDefaultProvider();
   let address = "";
   if (isAddress(ensOrAddress)) {
     address = ensOrAddress;
   } else {
-    address = await provider.resolveName(ensOrAddress);
+    const response = await provider.resolveName(ensOrAddress);
+    if (response) {
+      address = response;
+    }
   }
   const match = new RegExp(/([a-z]+):\/\/(.*)/).exec(uri);
   const match721 = new RegExp(/eip155:1\/erc721:(\w+)\/(\w+)/).exec(uri);

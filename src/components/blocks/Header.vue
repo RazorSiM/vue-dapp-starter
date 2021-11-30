@@ -9,12 +9,7 @@
       >
       <router-link v-slot="{ navigate }" custom :to="{ name: 'Account' }">
         <button
-          class="
-            focus:outline-none
-            disabled:(cursor-not-allowed
-            text-gray-300)
-            dark:disabled:(text-gray-800)
-          "
+          class="focus:outline-none disabled:(cursor-not-allowed text-gray-300) dark:disabled:(text-gray-800)"
           :class="route.name === 'Account' ? activeClasses : inactiveClasses"
           :disabled="!walletStore.connected || !walletStore.installed"
           @click="navigate"

@@ -1,15 +1,33 @@
 import {
-  AlchemyProvider,
   Block,
   BlockTag,
   Network,
-  Resolver,
   Web3Provider,
+  getDefaultProvider,
 } from "@ethersproject/providers";
 
 import { formatUnits } from "@ethersproject/units";
-import { getProvider } from "~/services/wallets/metamask";
+import { getProvider as getMetamaskProvider } from "~/services/wallets/metamask";
 import { isAddress } from "@ethersproject/address";
+
+const network = import.meta.env.VITE_PROVIDER_NETWORK;
+const providerOptions = {
+  alchemy: import.meta.env.VITE_ALCHEMY_KEY,
+  etherscan: import.meta.env.VITE_ETHERSCAN_KEY,
+  infura: import.meta.env.VITE_INFURA_KEY,
+};
+
+const initDefaultProvider = async () => {
+  try {
+    return await getDefaultProvider(network, providerOptions);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error getting the default provider");
+    }
+  }
+};
 
 /**
  *
@@ -17,7 +35,7 @@ import { isAddress } from "@ethersproject/address";
  */
 async function initWeb3Provider(): Promise<Web3Provider> {
   try {
-    const provider = await getProvider();
+    const provider = await getMetamaskProvider();
     return new Web3Provider(provider);
   } catch (error) {
     if (error instanceof Error) {
@@ -28,21 +46,35 @@ async function initWeb3Provider(): Promise<Web3Provider> {
   }
 }
 
-/**
- *
- * @returns Inits the Alchemy Provider
- */
-async function initAlchemyProvider(): Promise<AlchemyProvider> {
+async function getSignerOrProvider(signer: boolean) {
+  if (signer) {
+    const provider = await initWeb3Provider();
+    return provider.getSigner();
+  }
+  return await initDefaultProvider();
+}
+
+const initContractInstance = async (
+  contractFactory: any,
+  contractAddress: string,
+  signer = false,
+  errorMessage = "Failed to create the contract instance"
+) => {
+  const provider = await getSignerOrProvider(signer);
   try {
-    return new AlchemyProvider("homestead", import.meta.env.VITE_ALCHEMY_KEY);
+    return await contractFactory.connect(
+      contractAddress,
+      provider
+      // provider.getSigner()
+    );
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
     } else {
-      throw new Error("Error initializing the provider");
+      throw new Error(errorMessage);
     }
   }
-}
+};
 
 /**
  *
@@ -50,7 +82,7 @@ async function initAlchemyProvider(): Promise<AlchemyProvider> {
  */
 async function getNetwork(): Promise<Network> {
   try {
-    const provider = await initAlchemyProvider();
+    const provider = await initDefaultProvider();
     return await provider.getNetwork();
   } catch (error) {
     if (error instanceof Error) {
@@ -69,7 +101,7 @@ async function getNetwork(): Promise<Network> {
 async function lookupAddress(walletAddress: string): Promise<string> {
   try {
     if (isAddress(walletAddress)) {
-      const provider = await initAlchemyProvider();
+      const provider = await initDefaultProvider();
       const network = await getNetwork();
       if (network.chainId !== 1) {
         return "";
@@ -100,7 +132,7 @@ async function lookupAddress(walletAddress: string): Promise<string> {
  */
 async function getBlock(block: BlockTag): Promise<Block> {
   try {
-    const provider = await initWeb3Provider();
+    const provider = await initDefaultProvider();
     return await provider.getBlock(block);
   } catch (error) {
     if (error instanceof Error) {
@@ -127,7 +159,7 @@ async function getLatestBlockTimestamp(): Promise<number> {
 async function getEthBalance(walletAddress: string): Promise<string> {
   try {
     if (isAddress(walletAddress) || walletAddress.endsWith(".eth")) {
-      const provider = await initWeb3Provider();
+      const provider = await initDefaultProvider();
       const response = await provider.getBalance(walletAddress);
       return formatUnits(response);
     } else {
@@ -141,22 +173,10 @@ async function getEthBalance(walletAddress: string): Promise<string> {
     }
   }
 }
-async function getResolver(ensName: string): Promise<Resolver> {
-  try {
-    const provider = await initAlchemyProvider();
 
-    return await provider.getResolver(ensName);
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error("Error retrieving the resolver");
-    }
-  }
-}
 async function getAvatarUri(ensOrAddress: string): Promise<string> {
   try {
-    const provider = await initAlchemyProvider();
+    const provider = await initDefaultProvider();
     let ensName = "";
     if (isAddress(ensOrAddress)) {
       ensName = await lookupAddress(ensOrAddress);
@@ -164,12 +184,13 @@ async function getAvatarUri(ensOrAddress: string): Promise<string> {
       ensName = ensOrAddress;
     }
     const resolver = await provider.getResolver(ensName);
-    const avatarUri = await resolver.getText("avatar");
-    if (avatarUri && avatarUri.length > 0) {
-      return avatarUri;
-    } else {
-      return "";
+    if (resolver) {
+      const avatarUri = await resolver.getText("avatar");
+      if (avatarUri && avatarUri.length > 0) {
+        return avatarUri;
+      }
     }
+    return "";
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -186,7 +207,8 @@ export {
   getEthBalance,
   lookupAddress,
   getNetwork,
-  initAlchemyProvider,
   getAvatarUri,
-  getResolver,
+  getSignerOrProvider,
+  initDefaultProvider,
+  initContractInstance,
 };

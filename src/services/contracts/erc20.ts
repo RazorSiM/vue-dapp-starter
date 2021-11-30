@@ -1,10 +1,44 @@
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
-import { initAlchemyProvider, initWeb3Provider } from "~/services/contracts";
+import { Erc20, Erc20__factory } from "~/types/chain";
 
 import { ContractTransaction } from "@ethersproject/contracts";
-import { Erc20__factory } from "~/types/chain";
 import { formatUnits } from "@ethersproject/units";
+import { initContractInstance } from "~/services/contracts";
 
+const initERC20Contract = async (
+  signer: boolean,
+  address: string
+): Promise<Erc20> => {
+  try {
+    return await initContractInstance(Erc20__factory, address, signer);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Failed to connect to the ERC20 Contract");
+    }
+  }
+};
+
+const erc20Allowance = async (
+  tokenAddress: string,
+  contractAddress: string,
+  digits: number
+) => {
+  const contract = await initERC20Contract(false, tokenAddress);
+  try {
+    return formatUnits(
+      await contract.allowance(contractAddress, contractAddress),
+      digits
+    );
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error while retrieving the erc20 allowance");
+    }
+  }
+};
 /**
  *
  * @param tokenAddress Contract address of the ERC20 token
@@ -19,10 +53,9 @@ const erc20Approval = async (
   amount: BigNumberish,
   digits: number
 ): Promise<ContractTransaction> => {
+  const contract = await initERC20Contract(true, tokenAddress);
   try {
-    const provider = await initWeb3Provider();
-    const ERC20 = Erc20__factory.connect(tokenAddress, provider.getSigner());
-    return ERC20.approve(contractAddress, formatUnits(amount, digits));
+    return contract.approve(contractAddress, formatUnits(amount, digits));
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -38,10 +71,9 @@ const erc20Approval = async (
  * @returns Symbol of the token as a string
  */
 const erc20Symbol = async (tokenAddress: string): Promise<string> => {
+  const contract = await initERC20Contract(false, tokenAddress);
   try {
-    const provider = await initAlchemyProvider();
-    const ERC20 = Erc20__factory.connect(tokenAddress, provider);
-    return await ERC20.symbol();
+    return await contract.symbol();
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -61,10 +93,9 @@ const erc20Balance = async (
   walletAddress: string,
   tokenAddress: string
 ): Promise<BigNumber> => {
+  const contract = await initERC20Contract(false, tokenAddress);
   try {
-    const provider = await initAlchemyProvider();
-    const ERC20 = Erc20__factory.connect(tokenAddress, provider);
-    return await ERC20.balanceOf(walletAddress);
+    return await contract.balanceOf(walletAddress);
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -79,10 +110,9 @@ const erc20EstimateTransfer = async (
   tokenAddress: string,
   quantity: BigNumberish
 ): Promise<BigNumber> => {
+  const contract = await initERC20Contract(true, tokenAddress);
   try {
-    const provider = await initAlchemyProvider();
-    const ERC20 = Erc20__factory.connect(tokenAddress, provider);
-    return await ERC20.estimateGas.transfer(toWalletAddress, quantity);
+    return await contract.estimateGas.transfer(toWalletAddress, quantity);
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -93,6 +123,7 @@ const erc20EstimateTransfer = async (
 };
 
 export {
+  erc20Allowance,
   erc20Approval,
   erc20Balance,
   erc20Symbol,

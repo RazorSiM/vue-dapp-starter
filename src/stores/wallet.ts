@@ -1,14 +1,14 @@
 import {
+  getEthBalance as _getEthBalance,
+  getAvatarUri,
+  lookupAddress,
+} from "~/services/contracts";
+import {
   getAccounts,
   getChainId,
   getProvider,
   requestAccounts,
 } from "~/services/wallets/metamask";
-import {
-  getAvatarUri,
-  getEthBalance,
-  lookupAddress,
-} from "~/services/contracts";
 
 import { defineStore } from "pinia";
 import { getAvatarImageUrl } from "~/helpers/ensAvatar";
@@ -18,7 +18,7 @@ export const useWalletStore = defineStore({
   state: () => ({
     connected: false,
     installed: false,
-    chainId: "",
+    chainId: "" as null | string,
     address: "",
     ens: "",
     avatar: "",
@@ -43,7 +43,7 @@ export const useWalletStore = defineStore({
           return "Kovan";
       }
     },
-    getAddress: (state) => state.address,
+    getAddress: (state) => state.address.toLowerCase(),
     getShortAddress: (state) =>
       state.address !== ""
         ? state.address.substring(0, 6) + "...." + state.address.substring(38)
@@ -96,7 +96,7 @@ export const useWalletStore = defineStore({
 
           this.connected = true;
           this.walletType = "Metamask";
-          this.ethBalance = await getEthBalance(this.address);
+          await this.getBalance();
         } else {
           this.address = "";
           this.connected = false;
@@ -111,6 +111,17 @@ export const useWalletStore = defineStore({
         }
       }
     },
+    async getBalance(): Promise<void> {
+      try {
+        this.ethBalance = await _getEthBalance(this.address);
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        } else {
+          throw new Error("Error Getting the balance");
+        }
+      }
+    },
     async requestAccounts(): Promise<void> {
       try {
         await this.setChainId();
@@ -119,7 +130,7 @@ export const useWalletStore = defineStore({
         this.ens = await lookupAddress(accounts[0]);
         this.connected = true;
         this.walletType = "Metamask";
-        this.ethBalance = await getEthBalance(this.address);
+        await this.getBalance();
       } catch (error) {
         if (error instanceof Error) {
           throw new Error(error.message);

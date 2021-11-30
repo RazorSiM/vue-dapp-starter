@@ -2,20 +2,7 @@
   <Avatar v-if="walletStore.getConnected" />
   <button
     :class="buttonColor"
-    class="
-      outline-none
-      focus:outline-none
-      font-semibold
-      hover:(bg-secondary
-      shadow-md)
-      transition-colors
-      rounded-full
-      p-2
-      leading-none
-      font-medium
-      flex flex-col
-      items-center
-    "
+    class="outline-none focus:outline-none font-semibold hover:(bg-secondary shadow-md) transition-colors rounded-full p-2 leading-none font-medium flex flex-col items-center"
     @click="handleButton()"
   >
     <template v-if="walletStore.getEns !== ''">

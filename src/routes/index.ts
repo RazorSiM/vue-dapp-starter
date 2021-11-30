@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import About from "~/views/About.vue";
-import Account from "~/views/Account.vue";
-import Home from "~/views/Home.vue";
+import About from "~/views/AboutView.vue";
+import Account from "~/views/AccountView.vue";
+import Home from "~/views/HomeView.vue";
 import { useWalletStore } from "~/stores/wallet";
 
 const routes = [

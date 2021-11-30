@@ -1,42 +1,10 @@
 <template>
-  <div
-    class="
-      rounded-xl
-      border-opacity-30
-      p-4
-      mt-4
-      max-w-[400px]
-      break-words
-      bg-light-500
-      shadow-md
-      dark:(bg-gray-800)
-    "
-  >
+  <CardContainer>
     <h1 class="mb-3">Wallet Info Card</h1>
     <input
       v-model="walletAddress"
       type="text"
-      class="
-        py-1
-        pl-2
-        rounded-lg
-        w-full
-        text-opacity-40
-        transition
-        bg-light-900
-        focus:(outline-none
-        bg-light-700
-        border-light-900
-        text-opacity-100)
-        dark:(
-        bg-gray-900
-        text-white
-        )
-        dark:focus:(outline-none
-        ring-2 ring-gray-900
-        bg-gray-700
-        text-opacity-100)
-      "
+      class="py-1 pl-2 rounded-lg w-full text-opacity-40 transition bg-light-900 focus:(outline-none bg-light-700 border-light-900 text-opacity-100) dark:( bg-gray-900 text-white ) dark:focus:(outline-none ring-2 ring-gray-900 bg-gray-700 text-opacity-100)"
       placeholder="input a wallet address here"
     />
     <div v-if="status === 'RUNNING'" class="mt-6">...LOADING...</div>
@@ -72,7 +40,7 @@
         ENS: <span class="font-bold text-teal-400">{{ ensAddress }}</span>
       </p>
     </div>
-  </div>
+  </CardContainer>
 </template>
 <script setup lang="ts">
 import { useWalletInfo } from "~/composables/useWalletInfo";

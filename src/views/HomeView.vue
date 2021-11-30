@@ -1,5 +1,5 @@
 <template>
-  <h1 class="text-2xl font-bold">Nothing to see here 🤯</h1>
+  <h1 class="text-2xl font-bold">Nothing to see here</h1>
   <p>
     The Account page is route guarded. You need to be connected to metamask to
     go there.

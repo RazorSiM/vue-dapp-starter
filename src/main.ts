@@ -2,8 +2,8 @@ import "virtual:windi.css";
 import "~/assets/style.css";
 
 import App from "./App.vue";
-import BaseLayout from "./layouts/Base.vue";
-import EmptyLayout from "./layouts/Empty.vue";
+import BaseLayout from "./layouts/BaseLayout.vue";
+import EmptyLayout from "./layouts/EmptyLayout.vue";
 import { createApp } from "vue";
 import { pinia } from "./stores";
 import router from "~/routes";

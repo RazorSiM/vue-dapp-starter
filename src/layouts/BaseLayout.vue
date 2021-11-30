@@ -1,16 +1,6 @@
 <template>
   <div
-    class="
-      min-h-screen
-      bg-gray-50
-      w-full
-      transition
-      text-gray-900
-      duration-100
-      dark:(bg-gray-900
-      text-gray-50)
-      p-4
-    "
+    class="min-h-screen bg-gray-50 w-full transition text-gray-900 duration-100 dark:(bg-gray-900 text-gray-50) p-4"
   >
     <Header />
 
