@@ -10,4 +10,8 @@ package-lock.json
 src/types/chain
 .env
 auto-imports.d.ts
-.env
+
+# Ignore generated grapqhl files
+src/grapqhl/schema.json
+src/grapqhl/types.ts
+src/grapqhl/urql.ts

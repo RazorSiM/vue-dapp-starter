@@ -19,6 +19,17 @@ Todo:
 - [ ] Implement WalletConnect support
 - [x] Basic smart contract interaction example
 
+## Grapqhl integrations
+This starter includes an automated codegen for grapqhl via `graphql-codegen` + `urql` to generate Typescript classes/interfaces and typed operations (queries, subscriptions etcetera);
+this is expecially useful if your project needs to interact with a grapqhl endpoint like the ones provided by [The Graph Project](https://thegraph.com).
+
+to use it you just need to:
+- Add your grapqhl endpoint in the `.env` file via the `VITE_GRAPHQL_ENDPOINT`
+- Write some grapqhl operations in the `src/graphql` folder
+- Run `pnpm generate-graphql`
+
+As this is generated code it isn't advised to put it in your github repository, instead it is better to run the codegen as part of the build process.
+
 ## Scaffolding
 
 I've added an example on how you could use a multi layout approach for your project. There's also a "dark mode" toggler example using Tailwind features.

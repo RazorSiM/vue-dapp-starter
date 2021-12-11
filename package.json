@@ -19,6 +19,7 @@
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
     "generate-types": "typechain --target ethers-v5 --out-dir src/types/chain 'src/types/abis/*.json'",
+    "generate-graphql": "graphql-codegen -r dotenv/config --config codegen.yml",
     "postinstall": "npm run generate-types && cp .env.example .env"
   },
   "dependencies": {
@@ -31,10 +32,13 @@
     "@ethersproject/providers": "^5.5.0",
     "@ethersproject/units": "^5.5.0",
     "@metamask/detect-provider": "^1.2.0",
+    "@urql/vue": "^0.6.1",
     "@vueuse/core": "^7.0.3",
     "dayjs": "^1.10.7",
     "ethereum-blockies-base64": "^1.0.2",
     "ethers": "^5.5.1",
+    "graphql": "^16.1.0",
+    "graphql-tag": "^2.12.6",
     "ohmyfetch": "^0.4.2",
     "pinia": "^2.0.0",
     "vue": "^3.2.3",
@@ -42,6 +46,11 @@
   },
   "devDependencies": {
     "@arkweid/lefthook": "^0.7.6",
+    "@graphql-codegen/cli": "^2.3.0",
+    "@graphql-codegen/introspection": "^2.1.0",
+    "@graphql-codegen/typescript": "^2.4.1",
+    "@graphql-codegen/typescript-operations": "^2.2.1",
+    "@graphql-codegen/typescript-vue-urql": "^2.2.1",
     "@iconify/json": "^1.1.420",
     "@typechain/ethers-v5": "^8.0.0",
     "@types/node": "^16.11.6",

@@ -1,0 +1,29 @@
+overwrite: true
+schema: ${VITE_GRAPHQL_ENDPOINT}
+documents: "src/graphql/**/*.graphql"
+generates:
+  src/graphql/types.ts:
+    plugins:
+      - "typescript"
+    config:
+      scalars:
+        BigDecimal: string
+        BigInt: string
+        Bytes: string
+  src/graphql/schema.json:
+    plugins:
+      - "introspection"
+    config:
+      scalars:
+        BigDecimal: string
+        BigInt: string
+        Bytes: string
+  src/graphql/urql.ts:
+    plugins:
+      - "typescript-operations"
+      - "typescript-vue-urql"
+    config:
+      scalars:
+        BigDecimal: string
+        BigInt: string
+        Bytes: string
