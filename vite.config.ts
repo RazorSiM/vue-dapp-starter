@@ -16,7 +16,7 @@ export default defineConfig({
   },
   plugins: [
     Vue({
-      refTransform: true,
+      reactivityTransform: true,
     }),
     AutoImport({
       imports: ["vue", "vue-router", "@vueuse/core"],

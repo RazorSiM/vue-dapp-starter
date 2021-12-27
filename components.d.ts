@@ -9,7 +9,6 @@ declare module 'vue' {
     DarkToggle: typeof import('./src/components/globals/DarkToggle.vue')['default']
     Header: typeof import('./src/components/blocks/Header.vue')['default']
     InputField: typeof import('./src/components/globals/InputField.vue')['default']
-    InputText: typeof import('./src/components/globals/InputText.vue')['default']
     MetamaskConnect: typeof import('./src/components/globals/MetamaskConnect.vue')['default']
     SampleWalletData: typeof import('./src/components/cards/SampleWalletData.vue')['default']
   }

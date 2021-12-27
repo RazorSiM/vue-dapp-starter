@@ -1,4 +1,4 @@
-/// <reference types="vue/ref-macros" />
+/// <reference types="vue/macros-global" />
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
