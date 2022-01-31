@@ -1,3 +1,5 @@
+![Alt](https://repobeats.axiom.co/api/embed/be2d70a00d8f7df298a81e40b64bd8da7abb8458.svg "Repobeats analytics image")
+
 # Vue3 dapp starter
 
 My Vite starter template for fast prototyping on web3. If you want to try it:
