@@ -1,77 +1,50 @@
-import { ExternalProvider } from "@ethersproject/providers";
-import detectEthereumProvider from "@metamask/detect-provider";
+import {
+  getAccounts,
+  getChainId,
+  getProvider,
+  requestAccounts
+} from "~/services/wallets/injected";
 
-/**
- *
- * @returns Return window.ethereum or throw an error
- */
-const getProvider = async (): Promise<ExternalProvider> => {
+const walletType = "metamask";
+const watchAsset = async (
+  type = "ERC20",
+  address: string,
+  symbol: string,
+  decimals: number
+) => {
   try {
-    const provider = (await detectEthereumProvider({
-      mustBeMetaMask: true,
-    })) as ExternalProvider;
-    if (provider !== null) {
-      return provider;
+    const metamask = await getProvider(true);
+    if (metamask.request) {
+      await metamask.request({
+        method: "wallet_watchAsset",
+        params: {
+          //@ts-expect-error type error
+          type: type,
+          options: {
+            address: address,
+            symbol: symbol,
+            decimals: decimals,
+            image: "https://potion.fi/favicon.png",
+          },
+        },
+      });
     }
-    throw new Error("Error getting your Wallet");
+
+    return true;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
     } else {
-      throw new Error("Error getting your wallet");
+      throw new Error("Error initializing adding the custom token");
     }
   }
 };
 
-/**
- *
- * @returns Array of accounts. For now, it will return always an array with the account selected in metamask. In the future, will return an array of accounts
- */
-const getAccounts = async (): Promise<string[]> => {
-  try {
-    const provider = await getProvider();
-    return await provider.request?.({
-      method: "eth_accounts",
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error("Error trying to get your accounts[s]");
-    }
-  }
+export {
+  getProvider,
+  watchAsset,
+  getAccounts,
+  requestAccounts,
+  getChainId,
+  walletType,
 };
-
-const getChainId = async (): Promise<string> => {
-  try {
-    const provider = await getProvider();
-    return await provider.request?.({ method: "eth_chainId" });
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error("Error getting the chain id");
-    }
-  }
-};
-
-/**
- *
- * @returns return an array of accounts[the one selected] if the app has the permission to access the wallet. If not, will fire up the permission request and then return the array of accounts
- */
-const requestAccounts = async (): Promise<string[]> => {
-  try {
-    const provider = await getProvider();
-    return await provider.request?.({
-      method: "eth_requestAccounts",
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error("Error during the dApp approval");
-    }
-  }
-};
-
-export { getProvider, getAccounts, requestAccounts, getChainId };

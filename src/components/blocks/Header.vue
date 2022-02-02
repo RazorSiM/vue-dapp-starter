@@ -11,7 +11,7 @@
         <button
           class="focus:outline-none disabled:(cursor-not-allowed text-gray-300) dark:disabled:(text-gray-800)"
           :class="route.name === 'Account' ? activeClasses : inactiveClasses"
-          :disabled="!walletStore.connected || !walletStore.installed"
+          :disabled="!walletStore.connected"
           @click="navigate"
         >
           Account
@@ -20,7 +20,7 @@
     </div>
 
     <div class="justify-self-end flex items-center space-x-2">
-      <MetamaskConnect />
+      <slot />
     </div>
   </div>
 </template>
@@ -28,13 +28,6 @@
 import { useWalletStore } from "~/stores/wallet";
 
 const walletStore = useWalletStore();
-onMounted(async () => {
-  await walletStore.setProvider();
-  if (walletStore.installed) {
-    await walletStore.setConnected();
-  }
-});
-
 const route = useRoute();
 const activeClasses = `font-bold dark:(text-white)`;
 const inactiveClasses = `text-gray-500 dark:(text-gray-300)`;

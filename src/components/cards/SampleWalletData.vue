@@ -25,7 +25,9 @@
       />
       <p>
         Network:
-        <span class="font-bold text-teal-400">{{ network?.name }}</span>
+        <span class="font-bold text-teal-400">{{
+          `${network?.chainId} | ${network?.name}`
+        }}</span>
       </p>
       <p>
         Eth Balance:

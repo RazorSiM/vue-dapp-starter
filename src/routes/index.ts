@@ -1,9 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
-
+import { useWalletStore } from "~/stores/wallet";
 import About from "~/views/AboutView.vue";
 import Account from "~/views/AccountView.vue";
 import Home from "~/views/HomeView.vue";
-import { useWalletStore } from "~/stores/wallet";
 
 const routes = [
   {
@@ -42,44 +41,31 @@ router.beforeEach(async (to, from, next) => {
    * If the root requires a wallet to interact with the blockchain...
    */
   if (to.meta.requiresWallet === true) {
-    console.log("require wallet true");
+    console.info(
+      `The route ${to.path} requires a wallet connected to the dapp...`
+    );
     /** try to get the provider - we need to check if window.ethereum is present
      * so we do not break the app throwing an error
      */
-    if (window.ethereum) {
-      await walletStore.setProvider();
-    } else {
+    try {
+      await walletStore.connectWallet();
+      console.info(`... and you are connected! Enjoy your trip to ${to.path}`);
+      next();
+    } catch (error) {
+      console.info(
+        `... and you are not connected!Redirecting you to ${from.path}`
+      );
+      console.error(`Router error - ${error}`);
       next(from);
     }
-
-    /**
-     * ... and the wallet provider is not installed ...
-     */
-    if (walletStore.installed === false) {
-      console.log("wallet not installed");
-      /**  ... redirect the  user to the home page*/
-      next("/");
-    } else {
-      console.log("wallet installed");
-      /** if the wallet provider is installed but the account is not present */
-      if (!walletStore.connected) {
-        console.log("wallet not connected");
-        /** try to get the account without firing up the permission modal */
-        await walletStore.setConnected();
-        if (walletStore.connected) {
-          console.log("wallet connected");
-          next();
-        } else {
-          console.log("not connected");
-          next(from);
-        }
-      } else {
-        next();
-      }
-    }
   } else {
-    console.log("no require");
-    next();
+    try {
+      await walletStore.connectWallet();
+      next();
+    } catch (error) {
+      console.error(`Router error - ${error}`);
+      next();
+    }
   }
 });
 

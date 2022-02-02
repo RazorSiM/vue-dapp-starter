@@ -8,9 +8,20 @@ declare module 'vue' {
     CardContainer: typeof import('./src/components/globals/CardContainer.vue')['default']
     DarkToggle: typeof import('./src/components/globals/DarkToggle.vue')['default']
     Header: typeof import('./src/components/blocks/Header.vue')['default']
-    InputField: typeof import('./src/components/globals/InputField.vue')['default']
+    IconPixelarticonsCloseBox: typeof import('~icons/pixelarticons/close-box')['default']
+    IconPixelarticonsHeart: typeof import('~icons/pixelarticons/heart')['default']
+    IconPixelarticonsLogout: typeof import('~icons/pixelarticons/logout')['default']
+    IconPixelarticonsMinus: typeof import('~icons/pixelarticons/minus')['default']
+    IconPixelarticonsPlus: typeof import('~icons/pixelarticons/plus')['default']
+    IconPixelarticonsSun: typeof import('~icons/pixelarticons/sun')['default']
+    InputNumber: typeof import('./src/components/globals/InputNumber.vue')['default']
+    InputText: typeof import('./src/components/globals/InputText.vue')['default']
     MetamaskConnect: typeof import('./src/components/globals/MetamaskConnect.vue')['default']
     SampleWalletData: typeof import('./src/components/cards/SampleWalletData.vue')['default']
+    WalletConnectButton: typeof import('./src/components/globals/wallet/WalletConnectButton.vue')['default']
+    WalletDisconnectButton: typeof import('./src/components/globals/wallet/WalletDisconnectButton.vue')['default']
+    WalletModal: typeof import('./src/components/globals/wallet/WalletModal.vue')['default']
+    WalletProviderButton: typeof import('./src/components/globals/wallet/WalletProviderButton.vue')['default']
   }
 }
 

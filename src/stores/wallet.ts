@@ -1,141 +1,103 @@
-import {
-  getEthBalance as _getEthBalance,
-  getAvatarUri,
-  lookupAddress,
-} from "~/services/contracts";
-import {
-  getAccounts,
-  getChainId,
-  getProvider,
-  requestAccounts,
-} from "~/services/wallets/metamask";
-
 import { defineStore } from "pinia";
 import { getAvatarImageUrl } from "~/helpers/ensAvatar";
+import {
+  getAvatarUri,
+  getSignerBalance,
+  getSignerData,
+  lookupAddress
+} from "~/services/contracts";
+import { IWalletConnectors } from "~/services/wallets";
+
+import { RemovableRef } from "@vueuse/core";
 
 export const useWalletStore = defineStore({
   id: "wallet",
   state: () => ({
-    connected: false,
-    installed: false,
-    chainId: "" as null | string,
+    walletConnector: useStorage("walletConnector", "") as RemovableRef<
+      keyof IWalletConnectors | ""
+    >,
     address: "",
+    chainId: 0 as null | number,
+    ethBalance: "",
+    txCount: 0,
+    connected: false,
     ens: "",
     avatar: "",
-    walletType: "",
-    ethBalance: "",
   }),
   getters: {
-    getConnected: (state) => state.connected,
-    getChainName: (state) => {
+    chainName: (state) => {
       switch (state.chainId) {
-        case "":
+        case null:
           return "Unknown";
-        case "0x1":
+        case 1337:
+          return "Ganache";
+        case 0x1:
           return "Mainnet";
-        case "0x3":
+        case 0x3:
           return "Ropsten";
-        case "0x4":
+        case 0x4:
           return "Rinkeby";
-        case "0x5":
+        case 0x5:
           return "Goerli";
-        case "0x2a":
+        case 0x2a:
           return "Kovan";
       }
     },
-    getAddress: (state) => state.address.toLowerCase(),
-    getShortAddress: (state) =>
+    lowerCaseAddress: (state) => state.address.toLowerCase(),
+    shortAddress: (state) =>
       state.address !== ""
         ? state.address.substring(0, 6) + "...." + state.address.substring(38)
         : "",
-    getEns: (state) => state.ens,
-    getAvatar: (state) => state.avatar,
-    getEthBalance: (state) => parseFloat(state.ethBalance).toFixed(3),
-    getWalletType: (state) => state.walletType,
   },
   actions: {
-    async setProvider(): Promise<void> {
-      try {
-        const provider = await getProvider();
-        this.installed = true;
-        if (provider.isMetaMask) {
-          this.walletType = "Metamask";
-        } else {
-          this.walletType = "Unknown";
-        }
-      } catch (error) {
-        this.walletType = "";
-        this.installed = false;
-        if (error instanceof Error) {
-          throw new Error(error.message);
-        } else {
-          throw new Error("Error setting the provider");
-        }
-      }
+    setWalletConnector(connector: keyof IWalletConnectors) {
+      this.walletConnector = connector;
     },
-    async setChainId(): Promise<void> {
-      try {
-        this.chainId = await getChainId();
-      } catch (error) {
-        this.chainId = "";
-      }
+    disconnectWallet() {
+      this.walletConnector = "";
+      this.connected = false;
+      this.address = "";
+      this.chainId = null;
+      this.ethBalance = "";
+      this.txCount = 0;
+      this.connected = false;
+      this.ens = "";
+      this.avatar = "";
     },
-    async setConnected(): Promise<void> {
-      try {
-        await this.setChainId();
-        const accounts = await getAccounts();
-        if (accounts.length > 0) {
-          this.address = accounts[0];
-          this.ens = await lookupAddress(accounts[0]);
-          this.ens !== ""
-            ? (this.avatar = await getAvatarImageUrl(
-                await getAvatarUri(this.ens),
-                this.ens
-              ))
-            : (this.avatar = "");
-
-          this.connected = true;
-          this.walletType = "Metamask";
-          await this.getBalance();
-        } else {
-          this.address = "";
+    async getEthBalance() {
+      if (this.walletConnector !== "") {
+        try {
+          this.ethBalance = await getSignerBalance(this.walletConnector);
+        } catch (error) {
           this.connected = false;
-          this.walletType = "";
-          this.ethBalance = "";
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          throw new Error(error.message);
-        } else {
-          throw new Error("Error checking the connection");
+          throw new Error(`Cannot get the balance:  ${error}`);
         }
       }
     },
-    async getBalance(): Promise<void> {
-      try {
-        this.ethBalance = await _getEthBalance(this.address);
-      } catch (error) {
-        if (error instanceof Error) {
-          throw new Error(error.message);
-        } else {
-          throw new Error("Error Getting the balance");
-        }
-      }
-    },
-    async requestAccounts(): Promise<void> {
-      try {
-        await this.setChainId();
-        const accounts = await requestAccounts();
-        this.address = accounts[0];
-        this.ens = await lookupAddress(accounts[0]);
-        this.connected = true;
-        this.walletType = "Metamask";
-        await this.getBalance();
-      } catch (error) {
-        if (error instanceof Error) {
-          throw new Error(error.message);
-        } else {
-          throw new Error("Error approving the dApp");
+    async connectWallet() {
+      if (this.walletConnector !== "") {
+        try {
+          const { address, chainId, ethBalance, txCount } = await getSignerData(
+            this.walletConnector
+          );
+          this.address = address;
+          this.chainId = chainId;
+          this.ethBalance = ethBalance;
+          this.txCount = txCount;
+          this.ens = await lookupAddress(this.address);
+          this.connected = true;
+
+          if (this.ens !== "") {
+            this.avatar = await getAvatarImageUrl(
+              await getAvatarUri(this.ens),
+              this.ens
+            );
+          } else {
+            this.avatar = "";
+          }
+        } catch (error) {
+          this.connected = false;
+          throw new Error(`Cannot connect to ${this.walletConnector}`);
         }
       }
     },

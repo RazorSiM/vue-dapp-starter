@@ -1,75 +1,154 @@
+import { IWalletConnectors, walletConnectors } from "~/services/wallets";
+
+import { isAddress } from "@ethersproject/address";
 import {
+  BaseProvider,
   Block,
   BlockTag,
-  Network,
-  Web3Provider,
   getDefaultProvider,
+  JsonRpcSigner,
+  Network,
+  WebSocketProvider
 } from "@ethersproject/providers";
-
 import { formatUnits } from "@ethersproject/units";
-import { getProvider as getMetamaskProvider } from "~/services/wallets/metamask";
-import { isAddress } from "@ethersproject/address";
 
 const network = import.meta.env.VITE_PROVIDER_NETWORK;
+
 const providerOptions = {
   alchemy: import.meta.env.VITE_ALCHEMY_KEY,
   etherscan: import.meta.env.VITE_ETHERSCAN_KEY,
   infura: import.meta.env.VITE_INFURA_KEY,
 };
 
-const initDefaultProvider = async () => {
+const initDefaultProvider = async (websocket = false) => {
   try {
+    if (websocket) {
+      if (network === "localhost") {
+        return new WebSocketProvider(`ws://localhost:8545`);
+      } else {
+        return new WebSocketProvider(
+          `wss://eth-${network}.alchemyapi.io/v2/${providerOptions.alchemy}`
+        );
+      }
+    }
+    if (network === "localhost") {
+      return await getDefaultProvider("http://localhost:8545", providerOptions);
+    }
     return await getDefaultProvider(network, providerOptions);
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw new Error(
+        `Cannot initialize the DefaultProvider: ${error.message}`
+      );
     } else {
       throw new Error("Error getting the default provider");
     }
   }
 };
 
-/**
- *
- * @returns Inits the Web3Provider by passing an ExternalProvider object or returns an error
- */
-async function initWeb3Provider(): Promise<Web3Provider> {
+async function getSignerOrProvider(
+  signer: boolean,
+  walletConnector: keyof IWalletConnectors
+): Promise<JsonRpcSigner | BaseProvider> {
+  if (signer) {
+    const [callback, arg] = walletConnectors[walletConnector];
+    try {
+      return await callback(arg);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(
+          `Cannot initialize the Signer at ${walletConnector}: ${error.message}`
+        );
+      } else {
+        throw new Error(`Error connecting to ${walletConnector} connector`);
+      }
+    }
+  }
+  return await initDefaultProvider();
+}
+
+async function getSignerAddress(walletConnector: keyof IWalletConnectors) {
+  const signer = (await getSignerOrProvider(
+    true,
+    walletConnector
+  )) as JsonRpcSigner;
   try {
-    const provider = await getMetamaskProvider();
-    return new Web3Provider(provider);
+    return await signer.getAddress();
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw new Error(
+        `Cannot get the signer address for ${walletConnector}: ${error.message}`
+      );
     } else {
-      throw new Error("Error initializing the provider");
+      throw new Error(`Cannot get the signer address for ${walletConnector}`);
     }
   }
 }
 
-async function getSignerOrProvider(signer: boolean) {
-  if (signer) {
-    const provider = await initWeb3Provider();
-    return provider.getSigner();
+async function getSignerNetwork(walletConnector: keyof IWalletConnectors) {
+  const signer = (await getSignerOrProvider(
+    true,
+    walletConnector
+  )) as JsonRpcSigner;
+  try {
+    return await signer.getChainId();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Cannot get the signer network: ${error.message}`);
+    } else {
+      throw new Error("Cannot get the signer network");
+    }
   }
-  return await initDefaultProvider();
+}
+async function getSignerBalance(walletConnector: keyof IWalletConnectors) {
+  const signer = (await getSignerOrProvider(
+    true,
+    walletConnector
+  )) as JsonRpcSigner;
+  try {
+    return formatUnits(await signer.getBalance());
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Cannot get the signer balance: ${error.message}`);
+    } else {
+      throw new Error("Cannot get the signer balance");
+    }
+  }
+}
+
+async function getSignerData(walletConnector: keyof IWalletConnectors) {
+  const signer = (await getSignerOrProvider(
+    true,
+    walletConnector
+  )) as JsonRpcSigner;
+  try {
+    const address = await signer.getAddress();
+    const chainId = await signer.getChainId();
+    const ethBalance = formatUnits(await signer.getBalance());
+    const txCount = await signer.getTransactionCount();
+    return { address, chainId, ethBalance, txCount };
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Cannot get the signer data: ${error.message}`);
+    } else {
+      throw new Error("Cannot get the signer data");
+    }
+  }
 }
 
 const initContractInstance = async (
   contractFactory: any,
   contractAddress: string,
   signer = false,
+  walletConnector: keyof IWalletConnectors,
   errorMessage = "Failed to create the contract instance"
 ) => {
-  const provider = await getSignerOrProvider(signer);
+  const provider = await getSignerOrProvider(signer, walletConnector);
   try {
-    return await contractFactory.connect(
-      contractAddress,
-      provider
-      // provider.getSigner()
-    );
+    return await contractFactory.connect(contractAddress, provider);
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw new Error(`${errorMessage}: ${error.message}`);
     } else {
       throw new Error(errorMessage);
     }
@@ -86,7 +165,7 @@ async function getNetwork(): Promise<Network> {
     return await provider.getNetwork();
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw new Error(`Cannot get the Network: ${error.message}`);
     } else {
       throw new Error("Error getting the network");
     }
@@ -118,7 +197,9 @@ async function lookupAddress(walletAddress: string): Promise<string> {
     }
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw new Error(
+        `Cannot get the ENS name for ${walletAddress}: ${error.message}`
+      );
     } else {
       throw new Error("Error getting the ENS name");
     }
@@ -136,7 +217,7 @@ async function getBlock(block: BlockTag): Promise<Block> {
     return await provider.getBlock(block);
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw new Error(`Cannot get the block: ${error.message}`);
     } else {
       throw new Error("Error getting the block");
     }
@@ -167,7 +248,9 @@ async function getEthBalance(walletAddress: string): Promise<string> {
     }
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw new Error(
+        `Cannot get the balance for ${walletAddress}: ${error.message}`
+      );
     } else {
       throw new Error("Error getting the Eth balance");
     }
@@ -193,7 +276,9 @@ async function getAvatarUri(ensOrAddress: string): Promise<string> {
     return "";
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw new Error(
+        `Cannot get the Avatar URI for ${ensOrAddress}: ${error.message}`
+      );
     } else {
       throw new Error("Error getting the avatar uri");
     }
@@ -201,7 +286,6 @@ async function getAvatarUri(ensOrAddress: string): Promise<string> {
 }
 
 export {
-  initWeb3Provider,
   getBlock,
   getLatestBlockTimestamp,
   getEthBalance,
@@ -211,4 +295,8 @@ export {
   getSignerOrProvider,
   initDefaultProvider,
   initContractInstance,
+  getSignerAddress,
+  getSignerNetwork,
+  getSignerData,
+  getSignerBalance,
 };
