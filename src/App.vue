@@ -12,7 +12,7 @@ let layout = $computed(() => {
 onMounted(() => {
   //@ts-expect-error any
   window.ethereum.on("accountsChanged", (accounts) => {
-    console.log("New account detected: ", accounts);
+    console.info("New account detected: ", accounts);
     window.location.reload();
   });
   //@ts-expect-error any
@@ -20,7 +20,7 @@ onMounted(() => {
     // Handle the new chain.
     // Correctly handling chain changes can be complicated.
     // We recommend reloading the page unless you have good reason not to.
-    console.log("New chain detected: ", chainId);
+    console.info("New chain detected: ", chainId);
     window.location.reload();
   });
 });

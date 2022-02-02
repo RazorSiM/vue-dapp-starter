@@ -2,7 +2,7 @@ import {
   getAccounts,
   getChainId,
   getProvider,
-  requestAccounts
+  requestAccounts,
 } from "~/services/wallets/injected";
 
 const walletType = "metamask";

@@ -8,7 +8,7 @@ import { getAccounts, getProvider } from "~/services/wallets/injected";
 import {
   JsonRpcProvider,
   JsonRpcSigner,
-  Web3Provider
+  Web3Provider,
 } from "@ethersproject/providers";
 
 const initJsonRpcProvider = (endpoint: string) => {

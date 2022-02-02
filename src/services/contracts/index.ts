@@ -8,7 +8,7 @@ import {
   getDefaultProvider,
   JsonRpcSigner,
   Network,
-  WebSocketProvider
+  WebSocketProvider,
 } from "@ethersproject/providers";
 import { formatUnits } from "@ethersproject/units";
 

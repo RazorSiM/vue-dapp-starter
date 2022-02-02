@@ -4,7 +4,7 @@ import {
   getAvatarUri,
   getSignerBalance,
   getSignerData,
-  lookupAddress
+  lookupAddress,
 } from "~/services/contracts";
 import { IWalletConnectors } from "~/services/wallets";
 
