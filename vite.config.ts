@@ -20,13 +20,15 @@ export default defineConfig({
     }),
     AutoImport({
       imports: ["vue", "vue-router", "@vueuse/core"],
-      dts: true,
+      dts: "src/auto-imports.d.ts",
     }),
     Components({
       resolvers: [IconsResolver({ prefix: "icon" })],
-      dts: true,
+      dts: "src/components.d.ts",
     }),
-    Icons(),
+    Icons({
+      autoInstall: true,
+    }),
     WindiCSS(),
   ],
 });
