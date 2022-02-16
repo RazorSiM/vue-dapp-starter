@@ -1,15 +1,19 @@
-import { httpEndpoint as frameHttpEndpoint } from "~/services/wallets/frame";
-/**
- * TODO: integrate at least walletConnect and develop the wallet selection logic
- * I need to wait for walletConnect to release a library compatible with rollup/vite
- */
-import { getAccounts, getProvider } from "~/services/wallets/injected";
-
 import {
   JsonRpcProvider,
   JsonRpcSigner,
   Web3Provider,
 } from "@ethersproject/providers";
+import {
+  enableWalleConnectProvider,
+  initWalleConnectProvider,
+} from "~/services/wallets/walletConnect";
+
+import { httpEndpoint as frameHttpEndpoint } from "~/services/wallets/frame";
+/**
+ * TODO: integrate at least walletConnect and develop the wallet selection logic
+ * I need to wait for walletConnect to release a library compatible with rollup/vite
+ */
+import { getProvider } from "~/services/wallets/injected";
 
 const initJsonRpcProvider = (endpoint: string) => {
   try {
@@ -38,6 +42,23 @@ const initJsonRpcSigner = async (endpoint: string) => {
     }
   }
 };
+
+async function walletConnectWeb3Signer(
+  endpoint: string
+): Promise<JsonRpcSigner> {
+  try {
+    const walletConnectProvider = await initWalleConnectProvider(endpoint);
+    await enableWalleConnectProvider(walletConnectProvider);
+    const web3provider = new Web3Provider(walletConnectProvider);
+    return web3provider.getSigner();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Error getting the Web3 Provider: ${error.message}`);
+    } else {
+      throw new Error("Error initializing the provider");
+    }
+  }
+}
 /**
  *
  * @returns Inits the Web3Provider by passing an ExternalProvider object or returns an error
@@ -94,12 +115,17 @@ export interface IWalletConnectors {
   metamask: [CallbackJsonRpcSigner, true];
   injected: [CallbackJsonRpcSigner, false];
   frame: [CallbackJsonRpcSigner, string];
+  walletConnect: [CallbackJsonRpcSigner, string];
 }
 
 const walletConnectors: IWalletConnectors = {
   metamask: [initWeb3Signer, true],
   injected: [initWeb3Signer, false],
   frame: [initJsonRpcSigner, frameHttpEndpoint],
+  walletConnect: [
+    walletConnectWeb3Signer,
+    "https://eth-mainnet.alchemyapi.io/v2/EnMO8RmTziovxt6rrA28KjWRrpkTWF3r",
+  ],
 };
 
 export { walletConnectors };

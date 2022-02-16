@@ -33,5 +33,6 @@ const connectors: Array<keyof IWalletConnectors> = [
   "metamask",
   "frame",
   "injected",
+  "walletConnect",
 ];
 </script>

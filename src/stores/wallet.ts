@@ -7,7 +7,6 @@ import {
 import { IWalletConnectors } from "~/services/wallets";
 import { RemovableRef } from "@vueuse/core";
 import { defineStore } from "pinia";
-import { getAvatarImageUrl } from "~/helpers/ensAvatar";
 
 export const useWalletStore = defineStore({
   id: "wallet",

@@ -1,5 +1,6 @@
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { Erc20, Erc20__factory } from "~/types/chain";
+import { IWalletConnectors, walletConnectors } from "../wallets";
 
 import { ContractTransaction } from "@ethersproject/contracts";
 import { formatUnits } from "@ethersproject/units";
@@ -7,10 +8,16 @@ import { initContractInstance } from "~/services/contracts";
 
 const initERC20Contract = async (
   signer: boolean,
-  address: string
+  address: string,
+  walletConnector: keyof IWalletConnectors
 ): Promise<Erc20> => {
   try {
-    return await initContractInstance(Erc20__factory, address, signer);
+    return await initContractInstance(
+      Erc20__factory,
+      address,
+      signer,
+      walletConnector
+    );
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -23,9 +30,14 @@ const initERC20Contract = async (
 const erc20Allowance = async (
   tokenAddress: string,
   contractAddress: string,
-  digits: number
+  digits: number,
+  walletConnectors: keyof IWalletConnectors
 ) => {
-  const contract = await initERC20Contract(false, tokenAddress);
+  const contract = await initERC20Contract(
+    false,
+    tokenAddress,
+    walletConnectors
+  );
   try {
     return formatUnits(
       await contract.allowance(contractAddress, contractAddress),
@@ -51,9 +63,14 @@ const erc20Approval = async (
   tokenAddress: string,
   contractAddress: string,
   amount: BigNumberish,
-  digits: number
+  digits: number,
+  walletConnectors: keyof IWalletConnectors
 ): Promise<ContractTransaction> => {
-  const contract = await initERC20Contract(true, tokenAddress);
+  const contract = await initERC20Contract(
+    true,
+    tokenAddress,
+    walletConnectors
+  );
   try {
     return contract.approve(contractAddress, formatUnits(amount, digits));
   } catch (error) {
@@ -70,8 +87,15 @@ const erc20Approval = async (
  * @param tokenAddress Contract address of the ERC20 token
  * @returns Symbol of the token as a string
  */
-const erc20Symbol = async (tokenAddress: string): Promise<string> => {
-  const contract = await initERC20Contract(false, tokenAddress);
+const erc20Symbol = async (
+  tokenAddress: string,
+  walletConnectors: keyof IWalletConnectors
+): Promise<string> => {
+  const contract = await initERC20Contract(
+    false,
+    tokenAddress,
+    walletConnectors
+  );
   try {
     return await contract.symbol();
   } catch (error) {
@@ -91,9 +115,14 @@ const erc20Symbol = async (tokenAddress: string): Promise<string> => {
  */
 const erc20Balance = async (
   walletAddress: string,
-  tokenAddress: string
+  tokenAddress: string,
+  walletConnectors: keyof IWalletConnectors
 ): Promise<BigNumber> => {
-  const contract = await initERC20Contract(false, tokenAddress);
+  const contract = await initERC20Contract(
+    false,
+    tokenAddress,
+    walletConnectors
+  );
   try {
     return await contract.balanceOf(walletAddress);
   } catch (error) {
@@ -108,9 +137,14 @@ const erc20Balance = async (
 const erc20EstimateTransfer = async (
   toWalletAddress: string,
   tokenAddress: string,
-  quantity: BigNumberish
+  quantity: BigNumberish,
+  walletConnectors: keyof IWalletConnectors
 ): Promise<BigNumber> => {
-  const contract = await initERC20Contract(true, tokenAddress);
+  const contract = await initERC20Contract(
+    true,
+    tokenAddress,
+    walletConnectors
+  );
   try {
     return await contract.estimateGas.transfer(toWalletAddress, quantity);
   } catch (error) {
