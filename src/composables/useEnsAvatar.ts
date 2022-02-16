@@ -1,6 +1,7 @@
 import { Ref } from "vue";
 import { getAvatarImageUrl as _getAvatarImageUrl } from "~/helpers/ensAvatar";
-import { getAvatarUri } from "~/services/contracts";
+import { isAddress } from "@ethersproject/address";
+import makeBlockie from "ethereum-blockies-base64";
 
 const Status = {
   IDLE: "IDLE",
@@ -10,23 +11,26 @@ const Status = {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function useEnsAvatar(wallet: string | Ref<string>) {
+export function useEnsAvatar(ensOrAddress: string | Ref<string>) {
   const status = ref(Status.IDLE);
   const image = ref("");
 
   async function getAvatarImageUrl() {
     status.value = Status.RUNNING;
-    const uri = await getAvatarUri(unref(wallet));
-    if (uri !== null && uri !== "") {
-      image.value = await _getAvatarImageUrl(uri, unref(wallet));
+    if (isAddress(unref(ensOrAddress))) {
     } else {
-      image.value = "";
+      image.value = await _getAvatarImageUrl(unref(ensOrAddress));
+      status.value = Status.SUCCESS;
+    }
+    if (image.value === "") {
+      image.value = makeBlockie(unref(ensOrAddress));
+      status.value = Status.SUCCESS;
     }
   }
 
-  if (isRef(wallet)) {
+  if (isRef(ensOrAddress)) {
     debouncedWatch(
-      wallet,
+      ensOrAddress,
       async () => {
         await getAvatarImageUrl();
       },

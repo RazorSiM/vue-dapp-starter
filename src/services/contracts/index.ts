@@ -1,16 +1,16 @@
-import { IWalletConnectors, walletConnectors } from "~/services/wallets";
-
-import { isAddress } from "@ethersproject/address";
 import {
   BaseProvider,
   Block,
   BlockTag,
-  getDefaultProvider,
   JsonRpcSigner,
   Network,
   WebSocketProvider,
+  getDefaultProvider,
 } from "@ethersproject/providers";
+import { IWalletConnectors, walletConnectors } from "~/services/wallets";
+
 import { formatUnits } from "@ethersproject/units";
+import { isAddress } from "@ethersproject/address";
 
 const network = import.meta.env.VITE_PROVIDER_NETWORK;
 
@@ -126,7 +126,8 @@ async function getSignerData(walletConnector: keyof IWalletConnectors) {
     const chainId = await signer.getChainId();
     const ethBalance = formatUnits(await signer.getBalance());
     const txCount = await signer.getTransactionCount();
-    return { address, chainId, ethBalance, txCount };
+    const ens = await lookupAddress(address);
+    return { address, chainId, ethBalance, txCount, ens };
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Cannot get the signer data: ${error.message}`);
@@ -257,41 +258,12 @@ async function getEthBalance(walletAddress: string): Promise<string> {
   }
 }
 
-async function getAvatarUri(ensOrAddress: string): Promise<string> {
-  try {
-    const provider = await initDefaultProvider();
-    let ensName = "";
-    if (isAddress(ensOrAddress)) {
-      ensName = await lookupAddress(ensOrAddress);
-    } else {
-      ensName = ensOrAddress;
-    }
-    const resolver = await provider.getResolver(ensName);
-    if (resolver) {
-      const avatarUri = await resolver.getText("avatar");
-      if (avatarUri && avatarUri.length > 0) {
-        return avatarUri;
-      }
-    }
-    return "";
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(
-        `Cannot get the Avatar URI for ${ensOrAddress}: ${error.message}`
-      );
-    } else {
-      throw new Error("Error getting the avatar uri");
-    }
-  }
-}
-
 export {
   getBlock,
   getLatestBlockTimestamp,
   getEthBalance,
   lookupAddress,
   getNetwork,
-  getAvatarUri,
   getSignerOrProvider,
   initDefaultProvider,
   initContractInstance,

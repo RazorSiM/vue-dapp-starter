@@ -1,14 +1,13 @@
-import { defineStore } from "pinia";
-import { getAvatarImageUrl } from "~/helpers/ensAvatar";
 import {
-  getAvatarUri,
   getSignerBalance,
   getSignerData,
   lookupAddress,
 } from "~/services/contracts";
-import { IWalletConnectors } from "~/services/wallets";
 
+import { IWalletConnectors } from "~/services/wallets";
 import { RemovableRef } from "@vueuse/core";
+import { defineStore } from "pinia";
+import { getAvatarImageUrl } from "~/helpers/ensAvatar";
 
 export const useWalletStore = defineStore({
   id: "wallet",
@@ -25,7 +24,7 @@ export const useWalletStore = defineStore({
     avatar: "",
   }),
   getters: {
-    chainName: (state) => {
+    chainName(state) {
       switch (state.chainId) {
         case null:
           return "Unknown";
@@ -43,11 +42,32 @@ export const useWalletStore = defineStore({
           return "Kovan";
       }
     },
-    lowerCaseAddress: (state) => state.address.toLowerCase(),
-    shortAddress: (state) =>
-      state.address !== ""
+    lowerCaseAddress(state): string {
+      return state.address.toLowerCase();
+    },
+    shortAddress(state): string {
+      return state.address !== ""
         ? state.address.substring(0, 6) + "...." + state.address.substring(38)
-        : "",
+        : "";
+    },
+    ensOrAddress(state): string {
+      if (state.ens !== "") {
+        return state.ens;
+      }
+      if (this.lowerCaseAddress !== "") {
+        return this.lowerCaseAddress;
+      }
+      return "";
+    },
+    ensOrShortAddress(state): string {
+      if (state.ens !== "") {
+        return state.ens;
+      }
+      if (this.shortAddress !== "") {
+        return this.shortAddress;
+      }
+      return "";
+    },
   },
   actions: {
     setWalletConnector(connector: keyof IWalletConnectors) {
@@ -86,15 +106,6 @@ export const useWalletStore = defineStore({
           this.txCount = txCount;
           this.ens = await lookupAddress(this.address);
           this.connected = true;
-
-          if (this.ens !== "") {
-            this.avatar = await getAvatarImageUrl(
-              await getAvatarUri(this.ens),
-              this.ens
-            );
-          } else {
-            this.avatar = "";
-          }
         } catch (error) {
           this.connected = false;
           throw new Error(`Cannot connect to ${this.walletConnector}`);

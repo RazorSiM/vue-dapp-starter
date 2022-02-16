@@ -15,7 +15,7 @@ const handleOpenModal = () => {
 const walletStore = useWalletStore();
 let buttonText = $computed(() => {
   if (walletStore.connected && walletStore.address) {
-    return walletStore.ens !== "" ? walletStore.ens : walletStore.shortAddress;
+    return walletStore.ensOrShortAddress;
   } else {
     return "Connect to Wallet";
   }
