@@ -92,7 +92,8 @@ const handleErc20EstimateTransfer = async (
   Estimation = await erc20EstimateTransfer(
     destionationWallet,
     tokenAddress,
-    quantity
+    quantity,
+    walletStore.walletConnector
   );
 };
 
