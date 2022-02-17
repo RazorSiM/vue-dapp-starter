@@ -2,12 +2,15 @@ import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import Icons from "unplugin-icons/vite";
 import IconsResolver from "unplugin-icons/resolver";
+import gzipPlugin from "rollup-plugin-gzip";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
 import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill";
 import Vue from "@vitejs/plugin-vue";
 import WindiCSS from "vite-plugin-windicss";
 import { defineConfig } from "vite";
+import analyze from "rollup-plugin-visualizer";
 import path from "path";
+import { brotliCompressSync } from "zlib";
 
 import rollupNodePolyFill from "rollup-plugin-node-polyfills";
 
@@ -21,7 +24,7 @@ export default defineConfig({
       // process and buffer are excluded because already managed
       // by node-globals-polyfill
       util: "rollup-plugin-node-polyfills/polyfills/util",
-      sys: "util",
+      // sys: "util",
       // stream: 'rollup-plugin-node-polyfills/polyfills/stream',
       // path: 'rollup-plugin-node-polyfills/polyfills/path',
       // querystring: 'rollup-plugin-node-polyfills/polyfills/qs',
@@ -88,9 +91,28 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore build mode polyfills
-      plugins: [rollupNodePolyFill()],
+      output: {
+        manualChunks: {
+          walletconnect: ["@walletconnect/web3-provider"],
+        },
+      },
+      plugins: [
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore build mode polyfills
+        rollupNodePolyFill(),
+        // GZIP compression as .gz files
+        gzipPlugin(),
+        // Brotil compression as .br files
+        gzipPlugin({
+          customCompression: (c) => brotliCompressSync(Buffer.from(c)),
+          fileName: ".br",
+        }),
+        analyze({
+          filename: "dist/report.html",
+          gzipSize: true,
+          brotliSize: true,
+        }),
+      ],
     },
   },
 });
