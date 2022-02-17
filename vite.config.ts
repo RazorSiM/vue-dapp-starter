@@ -84,7 +84,12 @@ export default defineConfig({
     WindiCSS(),
   ],
   build: {
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
     rollupOptions: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore build mode polyfills
       plugins: [rollupNodePolyFill()],
     },
   },
