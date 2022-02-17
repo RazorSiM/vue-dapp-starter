@@ -1,18 +1,18 @@
-import AutoImport from "unplugin-auto-import/vite";
-import Components from "unplugin-vue-components/vite";
-import Icons from "unplugin-icons/vite";
-import IconsResolver from "unplugin-icons/resolver";
+import path from "path";
 import gzipPlugin from "rollup-plugin-gzip";
+import rollupNodePolyFill from "rollup-plugin-node-polyfills";
+import analyze from "rollup-plugin-visualizer";
+import AutoImport from "unplugin-auto-import/vite";
+import IconsResolver from "unplugin-icons/resolver";
+import Icons from "unplugin-icons/vite";
+import Components from "unplugin-vue-components/vite";
+import { defineConfig } from "vite";
+import WindiCSS from "vite-plugin-windicss";
+import { brotliCompressSync } from "zlib";
+
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
 import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill";
 import Vue from "@vitejs/plugin-vue";
-import WindiCSS from "vite-plugin-windicss";
-import { defineConfig } from "vite";
-import analyze from "rollup-plugin-visualizer";
-import path from "path";
-import { brotliCompressSync } from "zlib";
-
-import rollupNodePolyFill from "rollup-plugin-node-polyfills";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -104,7 +104,7 @@ export default defineConfig({
         gzipPlugin(),
         // Brotil compression as .br files
         gzipPlugin({
-          customCompression: (c) => brotliCompressSync(Buffer.from(c)),
+          customCompression: (c: any) => brotliCompressSync(Buffer.from(c)),
           fileName: ".br",
         }),
         analyze({
