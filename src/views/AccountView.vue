@@ -61,6 +61,8 @@ import { erc20EstimateTransfer } from "~/services/contracts/erc20";
 import type { BigNumberish } from "@ethersproject/bignumber";
 import { parseEther } from "@ethersproject/units";
 import { getSignerOrProvider, initDefaultProvider } from "~/services/contracts";
+import { IWalletConnectors } from "~/services/wallets";
+
 let addressTo = $ref("");
 let ethToTransfer = $ref("0");
 let tx = $ref<TransactionResponse>();
@@ -93,7 +95,7 @@ const handleErc20EstimateTransfer = async (
     destionationWallet,
     tokenAddress,
     quantity,
-    walletStore.walletConnector
+    walletStore.walletConnector as keyof IWalletConnectors
   );
 };
 

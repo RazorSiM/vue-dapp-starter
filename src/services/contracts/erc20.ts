@@ -1,6 +1,6 @@
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { Erc20, Erc20__factory } from "~/types/chain";
-import { IWalletConnectors, walletConnectors } from "../wallets";
+import { IWalletConnectors } from "../wallets";
 
 import { ContractTransaction } from "@ethersproject/contracts";
 import { formatUnits } from "@ethersproject/units";

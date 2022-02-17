@@ -5,7 +5,7 @@ import {
 } from "@ethersproject/providers";
 import {
   enableWalleConnectProvider,
-  initWalleConnectProvider,
+  initWalletConnectProvider,
 } from "~/services/wallets/walletConnect";
 
 import { httpEndpoint as frameHttpEndpoint } from "~/services/wallets/frame";
@@ -47,7 +47,7 @@ async function walletConnectWeb3Signer(
   endpoint: string
 ): Promise<JsonRpcSigner> {
   try {
-    const walletConnectProvider = await initWalleConnectProvider(endpoint);
+    const walletConnectProvider = await initWalletConnectProvider(endpoint);
     await enableWalleConnectProvider(walletConnectProvider);
     const web3provider = new Web3Provider(walletConnectProvider);
     return web3provider.getSigner();

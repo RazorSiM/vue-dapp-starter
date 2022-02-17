@@ -1,7 +1,11 @@
-import WalletConnectProvider from "@walletconnect/web3-provider";
+import type WalletConnectProvider from "@walletconnect/web3-provider";
+
+const walletconnectChunk = () => import("@walletconnect/web3-provider");
 let alreadyEnabled = false;
-const initWalleConnectProvider = (endpoint: string) => {
-  return new WalletConnectProvider({
+
+const initWalletConnectProvider = async (endpoint: string) => {
+  const provider = (await walletconnectChunk()).default;
+  return new provider({
     rpc: { 1: endpoint },
   });
 };
@@ -28,13 +32,13 @@ const enableWalleConnectProvider = async (provider: WalletConnectProvider) => {
   alreadyEnabled = true;
 };
 const disconnectWalleConnectProvider = async (
-  provider: typeof WalletConnectProvider
+  provider: WalletConnectProvider
 ) => {
   await provider.disconnect();
 };
 
 export {
-  initWalleConnectProvider,
+  initWalletConnectProvider,
   enableWalleConnectProvider,
   disconnectWalleConnectProvider,
 };
