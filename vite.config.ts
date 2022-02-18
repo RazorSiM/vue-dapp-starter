@@ -91,11 +91,6 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      output: {
-        manualChunks: {
-          walletconnect: ["@walletconnect/web3-provider"],
-        },
-      },
       plugins: [
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore build mode polyfills
