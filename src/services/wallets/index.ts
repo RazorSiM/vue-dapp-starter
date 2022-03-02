@@ -2,13 +2,13 @@ import { httpEndpoint as frameHttpEndpoint } from "~/services/wallets/frame";
 import { getProvider } from "~/services/wallets/injected";
 import {
   enableWalletConnectProvider,
-  initWalletConnectProvider
+  initWalletConnectProvider,
 } from "~/services/wallets/walletConnect";
 
 import {
   JsonRpcProvider,
   JsonRpcSigner,
-  Web3Provider
+  Web3Provider,
 } from "@ethersproject/providers";
 
 const network = import.meta.env.VITE_PROVIDER_NETWORK;
