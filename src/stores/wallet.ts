@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import {
   getSignerBalance,
   getSignerData,
-  lookupAddress,
+  lookupAddress
 } from "~/services/contracts";
 import { WalletType } from "~/services/wallets";
 
