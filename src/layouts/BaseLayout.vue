@@ -3,7 +3,6 @@
     class="min-h-screen bg-gray-50 w-full transition text-gray-900 duration-100 dark:(bg-gray-900 text-gray-50) p-4"
   >
     <Header>
-      <MetamaskConnect />
       <WalletConnectButton @open-wallet-modal="showWalletModal = true" />
       <WalletDisconnectButton v-if="walletStore.connected" />
     </Header>

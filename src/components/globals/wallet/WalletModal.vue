@@ -24,12 +24,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { IWalletConnectors } from "~/services/wallets";
+import { WalletType } from "~/services/wallets";
 const emits = defineEmits(["closeWalletModal"]);
 const handleCloseModal = () => {
   emits("closeWalletModal");
 };
-const connectors: Array<keyof IWalletConnectors> = [
+const connectors: WalletType[] = [
   "metamask",
   "frame",
   "injected",

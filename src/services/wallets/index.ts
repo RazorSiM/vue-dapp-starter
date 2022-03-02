@@ -1,35 +1,21 @@
+import { httpEndpoint as frameHttpEndpoint } from "~/services/wallets/frame";
+import { getProvider } from "~/services/wallets/injected";
+import {
+  enableWalletConnectProvider,
+  initWalletConnectProvider
+} from "~/services/wallets/walletConnect";
+
 import {
   JsonRpcProvider,
   JsonRpcSigner,
-  Web3Provider,
+  Web3Provider
 } from "@ethersproject/providers";
-import {
-  enableWalleConnectProvider,
-  initWalletConnectProvider,
-} from "~/services/wallets/walletConnect";
 
-import { httpEndpoint as frameHttpEndpoint } from "~/services/wallets/frame";
-/**
- * TODO: integrate at least walletConnect and develop the wallet selection logic
- * I need to wait for walletConnect to release a library compatible with rollup/vite
- */
-import { getProvider } from "~/services/wallets/injected";
+const network = import.meta.env.VITE_PROVIDER_NETWORK;
 
-const initJsonRpcProvider = (endpoint: string) => {
+const initJsonRpcSigner = (endpoint: string) => {
   try {
-    return new JsonRpcProvider(endpoint);
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Error getting the RPC Provider: ${error.message}`);
-    } else {
-      throw new Error("Error getting the RPC Provider");
-    }
-  }
-};
-const initJsonRpcSigner = async (endpoint: string) => {
-  try {
-    const provider = initJsonRpcProvider(endpoint);
-    return provider.getSigner();
+    return new JsonRpcProvider(endpoint).getSigner();
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(
@@ -43,14 +29,12 @@ const initJsonRpcSigner = async (endpoint: string) => {
   }
 };
 
-async function walletConnectWeb3Signer(
-  endpoint: string
-): Promise<JsonRpcSigner> {
+async function walletConnectWeb3Signer(): Promise<JsonRpcSigner> {
   try {
-    const walletConnectProvider = await initWalletConnectProvider(endpoint);
-    await enableWalleConnectProvider(walletConnectProvider);
-    const web3provider = new Web3Provider(walletConnectProvider);
-    return web3provider.getSigner();
+    const walletConnectProvider = await initWalletConnectProvider(network);
+    await enableWalletConnectProvider(walletConnectProvider);
+    const web3Provider = new Web3Provider(walletConnectProvider);
+    return web3Provider.getSigner();
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Error getting the Web3 Provider: ${error.message}`);
@@ -63,7 +47,7 @@ async function walletConnectWeb3Signer(
  *
  * @returns Inits the Web3Provider by passing an ExternalProvider object or returns an error
  */
-async function initWeb3Provider(mustBeMetamask = false) {
+async function initWeb3Signer(mustBeMetamask = false) {
   try {
     /**
      * Check if the provider is connected and we have permissions to access the accounts
@@ -72,60 +56,45 @@ async function initWeb3Provider(mustBeMetamask = false) {
     if (provider) {
       const accounts = await provider.request?.({ method: "eth_accounts" });
       if (accounts.length > 0) {
-        return new Web3Provider(provider);
+        return new Web3Provider(provider).getSigner();
       } else {
         const requestedAccounts = await provider.request?.({
           method: "eth_requestAccounts",
         });
         if (requestedAccounts.length > 0) {
-          return new Web3Provider(provider);
+          return new Web3Provider(provider).getSigner();
         } else {
           throw new Error("Error getting your account");
         }
       }
     } else {
-      throw new Error("Error getting the provider");
+      throw new Error("Error getting the signer");
     }
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Error getting the Web3 Provider: ${error.message}`);
-    } else {
-      throw new Error("Error initializing the provider");
-    }
-  }
-}
-async function initWeb3Signer(mustBeMetaMask = false): Promise<JsonRpcSigner> {
-  try {
-    const provider = await initWeb3Provider(mustBeMetaMask);
-
-    return provider.getSigner();
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Error getting the Web3 Signer: ${error.message}`);
     } else {
-      throw new Error("Error initializing the provider");
+      throw new Error(`Error getting the Web3 Signer`);
     }
   }
 }
 
-type CallbackJsonRpcSigner = (
-  ...args: any[]
-) => Promise<JsonRpcSigner> | JsonRpcSigner;
-export interface IWalletConnectors {
-  metamask: [CallbackJsonRpcSigner, true];
-  injected: [CallbackJsonRpcSigner, false];
-  frame: [CallbackJsonRpcSigner, string];
-  walletConnect: [CallbackJsonRpcSigner, string];
+export type WalletType = "metamask" | "injected" | "frame" | "walletConnect";
+
+async function getWalletSigner(walletType: WalletType): Promise<JsonRpcSigner> {
+  if (walletType === "metamask") {
+    return initWeb3Signer(true);
+  }
+  if (walletType === "injected") {
+    return initWeb3Signer(false);
+  }
+  if (walletType === "frame") {
+    return initJsonRpcSigner(frameHttpEndpoint);
+  }
+  if (walletType === "walletConnect") {
+    return walletConnectWeb3Signer();
+  }
+  throw new Error("Wallet type not found");
 }
 
-const walletConnectors: IWalletConnectors = {
-  metamask: [initWeb3Signer, true],
-  injected: [initWeb3Signer, false],
-  frame: [initJsonRpcSigner, frameHttpEndpoint],
-  walletConnect: [
-    walletConnectWeb3Signer,
-    "https://eth-mainnet.alchemyapi.io/v2/EnMO8RmTziovxt6rrA28KjWRrpkTWF3r",
-  ],
-};
-
-export { walletConnectors };
+export { getWalletSigner };

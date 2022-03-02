@@ -1,18 +1,18 @@
+import { defineStore } from "pinia";
 import {
   getSignerBalance,
   getSignerData,
-  lookupAddress,
+  lookupAddress
 } from "~/services/contracts";
+import { WalletType } from "~/services/wallets";
 
-import { IWalletConnectors } from "~/services/wallets";
 import { RemovableRef } from "@vueuse/core";
-import { defineStore } from "pinia";
 
 export const useWalletStore = defineStore({
   id: "wallet",
   state: () => ({
     walletConnector: useStorage("walletConnector", "") as RemovableRef<
-      keyof IWalletConnectors | ""
+      WalletType | ""
     >,
     address: "",
     chainId: 0 as null | number,
@@ -69,7 +69,7 @@ export const useWalletStore = defineStore({
     },
   },
   actions: {
-    setWalletConnector(connector: keyof IWalletConnectors) {
+    setWalletConnector(connector: WalletType) {
       this.walletConnector = connector;
     },
     disconnectWallet() {
@@ -107,6 +107,7 @@ export const useWalletStore = defineStore({
           this.connected = true;
         } catch (error) {
           this.connected = false;
+          this.disconnectWallet();
           throw new Error(`Cannot connect to ${this.walletConnector}`);
         }
       }

@@ -11,10 +11,10 @@
   </button>
 </template>
 <script lang="ts" setup>
-import { IWalletConnectors } from "~/services/wallets";
+import { WalletType } from "~/services/wallets";
 import { useWalletStore } from "~/stores/wallet";
 interface Props {
-  connector: keyof IWalletConnectors;
+  connector: WalletType;
 }
 const emits = defineEmits(["connectedToProvider"]);
 const props = withDefaults(defineProps<Props>(), {
@@ -29,6 +29,7 @@ const connectToProvider = async () => {
     emits("connectedToProvider");
   } catch (error) {
     selectionError = true;
+    walletStore.disconnectWallet();
     console.error(error);
   }
 };

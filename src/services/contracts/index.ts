@@ -1,16 +1,15 @@
+import { getWalletSigner, WalletType } from "~/services/wallets";
+
+import { isAddress } from "@ethersproject/address";
 import {
   BaseProvider,
   Block,
   BlockTag,
-  JsonRpcSigner,
-  Network,
-  WebSocketProvider,
   getDefaultProvider,
+  Network,
+  WebSocketProvider
 } from "@ethersproject/providers";
-import { IWalletConnectors, walletConnectors } from "~/services/wallets";
-
 import { formatUnits } from "@ethersproject/units";
-import { isAddress } from "@ethersproject/address";
 
 const network = import.meta.env.VITE_PROVIDER_NETWORK;
 
@@ -20,7 +19,9 @@ const providerOptions = {
   infura: import.meta.env.VITE_INFURA_KEY,
 };
 
-const initDefaultProvider = async (websocket = false) => {
+const initDefaultProvider = async (
+  websocket = false
+): Promise<BaseProvider> => {
   try {
     if (websocket) {
       if (network === "localhost") {
@@ -46,32 +47,8 @@ const initDefaultProvider = async (websocket = false) => {
   }
 };
 
-async function getSignerOrProvider(
-  signer: boolean,
-  walletConnector: keyof IWalletConnectors
-): Promise<JsonRpcSigner | BaseProvider> {
-  if (signer) {
-    const [callback, arg] = walletConnectors[walletConnector];
-    try {
-      return await callback(arg);
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(
-          `Cannot initialize the Signer at ${walletConnector}: ${error.message}`
-        );
-      } else {
-        throw new Error(`Error connecting to ${walletConnector} connector`);
-      }
-    }
-  }
-  return await initDefaultProvider();
-}
-
-async function getSignerAddress(walletConnector: keyof IWalletConnectors) {
-  const signer = (await getSignerOrProvider(
-    true,
-    walletConnector
-  )) as JsonRpcSigner;
+async function getSignerAddress(walletConnector: WalletType) {
+  const signer = await getWalletSigner(walletConnector);
   try {
     return await signer.getAddress();
   } catch (error) {
@@ -85,11 +62,8 @@ async function getSignerAddress(walletConnector: keyof IWalletConnectors) {
   }
 }
 
-async function getSignerNetwork(walletConnector: keyof IWalletConnectors) {
-  const signer = (await getSignerOrProvider(
-    true,
-    walletConnector
-  )) as JsonRpcSigner;
+async function getSignerNetwork(walletConnector: WalletType) {
+  const signer = await getWalletSigner(walletConnector);
   try {
     return await signer.getChainId();
   } catch (error) {
@@ -100,11 +74,8 @@ async function getSignerNetwork(walletConnector: keyof IWalletConnectors) {
     }
   }
 }
-async function getSignerBalance(walletConnector: keyof IWalletConnectors) {
-  const signer = (await getSignerOrProvider(
-    true,
-    walletConnector
-  )) as JsonRpcSigner;
+async function getSignerBalance(walletConnector: WalletType) {
+  const signer = await getWalletSigner(walletConnector);
   try {
     return formatUnits(await signer.getBalance());
   } catch (error) {
@@ -116,11 +87,8 @@ async function getSignerBalance(walletConnector: keyof IWalletConnectors) {
   }
 }
 
-async function getSignerData(walletConnector: keyof IWalletConnectors) {
-  const signer = (await getSignerOrProvider(
-    true,
-    walletConnector
-  )) as JsonRpcSigner;
+async function getSignerData(walletConnector: WalletType) {
+  const signer = await getWalletSigner(walletConnector);
   try {
     const address = await signer.getAddress();
     const chainId = await signer.getChainId();
@@ -140,11 +108,16 @@ async function getSignerData(walletConnector: keyof IWalletConnectors) {
 const initContractInstance = async (
   contractFactory: any,
   contractAddress: string,
-  signer = false,
-  walletConnector: keyof IWalletConnectors,
+  needSigner = false,
+  walletConnector: WalletType,
   errorMessage = "Failed to create the contract instance"
 ) => {
-  const provider = await getSignerOrProvider(signer, walletConnector);
+  let provider = null;
+  if (needSigner === true) {
+    provider = await getWalletSigner(walletConnector);
+  } else {
+    provider = await initDefaultProvider();
+  }
   try {
     return await contractFactory.connect(contractAddress, provider);
   } catch (error) {
@@ -264,11 +237,11 @@ export {
   getEthBalance,
   lookupAddress,
   getNetwork,
-  getSignerOrProvider,
   initDefaultProvider,
   initContractInstance,
   getSignerAddress,
   getSignerNetwork,
   getSignerData,
   getSignerBalance,
+  getWalletSigner,
 };

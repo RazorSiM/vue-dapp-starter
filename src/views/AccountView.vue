@@ -32,13 +32,13 @@
   <CardContainer class="flex flex-col gap-4">
     <p>This returns the unit of gas for a simple erc20 transaction</p>
     <InputText v-model="TokenAddress" placeholder="token address" />
-    <InputText v-model="DestionationWallet" placeholder="wallet address" />
+    <InputText v-model="DestinationWallet" placeholder="wallet address" />
     <InputText v-model="QuantityToTransfer" placeholder="quantity" />
     <button
       class="rounded-lg px-2 py-0.5 bg-yellow-300 text-gray-800 font-bold"
       @click="
         handleErc20EstimateTransfer(
-          DestionationWallet,
+          DestinationWallet,
           TokenAddress,
           QuantityToTransfer
         )
@@ -60,8 +60,8 @@ import { getBlock } from "~/services/contracts";
 import { erc20EstimateTransfer } from "~/services/contracts/erc20";
 import type { BigNumberish } from "@ethersproject/bignumber";
 import { parseEther } from "@ethersproject/units";
-import { getSignerOrProvider, initDefaultProvider } from "~/services/contracts";
-import { IWalletConnectors } from "~/services/wallets";
+import { getWalletSigner, initDefaultProvider } from "~/services/contracts";
+import { WalletType } from "~/services/wallets";
 
 let addressTo = $ref("");
 let ethToTransfer = $ref("0");
@@ -71,8 +71,7 @@ const walletStore = useWalletStore();
 
 const handleTransferEth = async () => {
   if (walletStore.walletConnector) {
-    const signer = await getSignerOrProvider(true, walletStore.walletConnector);
-    //@ts-expect-error typing error
+    const signer = await getWalletSigner(walletStore.walletConnector);
     tx = await signer.sendTransaction({
       to: addressTo,
       value: parseEther(unref(ethToTransfer)),
@@ -81,21 +80,21 @@ const handleTransferEth = async () => {
   }
 };
 let Block = $ref(0);
-let DestionationWallet = $ref("0x22ba12b2af77Ba70d41d71384d6a3d57F82C6Ce2");
+let DestinationWallet = $ref("0x22ba12b2af77Ba70d41d71384d6a3d57F82C6Ce2");
 let TokenAddress = $ref("0x7e6eda50d1c833be936492bf42c1bf376239e9e2");
 
 let QuantityToTransfer = $ref("1");
 let Estimation: BigNumberish = $ref();
 const handleErc20EstimateTransfer = async (
-  destionationWallet: string,
+  DestinationWallet: string,
   tokenAddress: string,
   quantity: string
 ) => {
   Estimation = await erc20EstimateTransfer(
-    destionationWallet,
+    DestinationWallet,
     tokenAddress,
     quantity,
-    walletStore.walletConnector as keyof IWalletConnectors
+    walletStore.walletConnector as WalletType
   );
 };
 
