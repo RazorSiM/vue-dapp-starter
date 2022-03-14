@@ -63,9 +63,9 @@ const getChainId = async (): Promise<string> => {
  *
  * @returns return an array of accounts[the one selected] if the app has the permission to access the wallet. If not, will fire up the permission request and then return the array of accounts
  */
-const requestAccounts = async (): Promise<string[]> => {
+const requestAccounts = async (mustBeMetamask: boolean): Promise<string[]> => {
   try {
-    const provider = await getProvider();
+    const provider = await getProvider(mustBeMetamask);
     return await provider.request?.({
       method: "eth_requestAccounts",
     });
@@ -78,4 +78,34 @@ const requestAccounts = async (): Promise<string[]> => {
   }
 };
 
-export { getProvider, getAccounts, requestAccounts, getChainId, walletType };
+const switchEthereumChain = async (chainId = "0x4", chainName = "rinkeby") => {
+  const provider = await getProvider();
+  try {
+    return await provider.request?.({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: chainId }],
+    });
+  } catch (switchError) {
+    //@ts-expect-error typed error
+    if (switchError.code === 4902) {
+      try {
+        return await provider.request?.({
+          method: "wallet_addEthereumChain",
+          params: [{ chainId: chainId, chainName: chainName }],
+        });
+      } catch (error) {
+        throw new Error("Couldn't add Rinkeby testnet to Metamask");
+      }
+    }
+    throw new Error("Couldn't switch to Rinkeby testnet");
+  }
+};
+
+export {
+  getProvider,
+  getAccounts,
+  requestAccounts,
+  getChainId,
+  walletType,
+  switchEthereumChain,
+};

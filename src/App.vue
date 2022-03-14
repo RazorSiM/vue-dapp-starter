@@ -5,10 +5,13 @@
 </template>
 
 <script lang="ts" setup>
+import { useWalletEvents } from "~/composables/useWalletEvents";
 const route = useRoute();
 let layout = $computed(() => {
   return route.meta.layout;
 });
+const walletEvents = useWalletEvents();
+walletEvents.actionSubscription();
 onMounted(() => {
   //@ts-expect-error any
   window.ethereum.on("accountsChanged", (accounts) => {

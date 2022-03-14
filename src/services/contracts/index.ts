@@ -2,12 +2,12 @@ import { getWalletSigner, WalletType } from "~/services/wallets";
 
 import { isAddress } from "@ethersproject/address";
 import {
-  BaseProvider,
+  AlchemyProvider,
   Block,
   BlockTag,
   getDefaultProvider,
   Network,
-  WebSocketProvider,
+  WebSocketProvider
 } from "@ethersproject/providers";
 import { formatUnits } from "@ethersproject/units";
 
@@ -19,28 +19,33 @@ const providerOptions = {
   infura: import.meta.env.VITE_INFURA_KEY,
 };
 
-const initDefaultProvider = async (
-  websocket = false
-): Promise<BaseProvider> => {
+const initDefaultProvider = async (websocket = false) => {
   try {
-    if (websocket) {
+    if (websocket === true) {
+      if (network === "rinkeby") {
+        return new WebSocketProvider(
+          `wss://eth-rinkeby.alchemyapi.io/v2/${providerOptions.alchemy}`
+        );
+      }
       if (network === "localhost") {
         return new WebSocketProvider(`ws://localhost:8545`);
       } else {
         return new WebSocketProvider(
-          `wss://eth-${network}.alchemyapi.io/v2/${providerOptions.alchemy}`
+          `wss://eth-mainnet.alchemyapi.io/v2/${providerOptions.alchemy}`
         );
       }
+    } else {
+      if (network === "rinkeby") {
+        return new AlchemyProvider(network, providerOptions.alchemy);
+      }
+      if (network === "localhost") {
+        return await getDefaultProvider("http://localhost:8545");
+      }
+      return await getDefaultProvider(network, providerOptions);
     }
-    if (network === "localhost") {
-      return await getDefaultProvider("http://localhost:8545", providerOptions);
-    }
-    return await getDefaultProvider(network, providerOptions);
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(
-        `Cannot initialize the DefaultProvider: ${error.message}`
-      );
+      throw new Error(error.message);
     } else {
       throw new Error("Error getting the default provider");
     }
@@ -108,6 +113,7 @@ async function getSignerData(walletConnector: WalletType) {
 const initContractInstance = async (
   contractFactory: any,
   contractAddress: string,
+  websocket: boolean,
   needSigner = false,
   walletConnector: WalletType,
   errorMessage = "Failed to create the contract instance"
@@ -116,7 +122,7 @@ const initContractInstance = async (
   if (needSigner === true) {
     provider = await getWalletSigner(walletConnector);
   } else {
-    provider = await initDefaultProvider();
+    provider = await initDefaultProvider(websocket);
   }
   try {
     return await contractFactory.connect(contractAddress, provider);

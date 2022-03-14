@@ -40,6 +40,42 @@ const watchAsset = async (
   }
 };
 
+const getEncryptionPublicKey = async () => {
+  const provider = await getProvider(true);
+
+  try {
+    const accounts = await getAccounts(true);
+    return await provider.request?.({
+      method: "eth_getEncryptionPublicKey",
+      params: [accounts[0]],
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Unable to get the encryption public key");
+    }
+  }
+};
+
+const decryptWithMetamask = async (string: string) => {
+  const provider = await getProvider(true);
+
+  try {
+    const accounts = await getAccounts(true);
+    return await provider.request?.({
+      method: "eth_decrypt",
+      params: [string, accounts[0]],
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Unable to get the encryption public key");
+    }
+  }
+};
+
 export {
   getProvider,
   watchAsset,
@@ -47,4 +83,6 @@ export {
   requestAccounts,
   getChainId,
   walletType,
+  getEncryptionPublicKey,
+  decryptWithMetamask,
 };

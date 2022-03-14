@@ -31,7 +31,7 @@ const initJsonRpcSigner = (endpoint: string) => {
 
 async function walletConnectWeb3Signer(): Promise<JsonRpcSigner> {
   try {
-    const walletConnectProvider = await initWalletConnectProvider(network);
+    const walletConnectProvider = await initWalletConnectProvider();
     await enableWalletConnectProvider(walletConnectProvider);
     const web3Provider = new Web3Provider(walletConnectProvider);
     return web3Provider.getSigner();
@@ -79,7 +79,12 @@ async function initWeb3Signer(mustBeMetamask = false) {
   }
 }
 
-export type WalletType = "metamask" | "injected" | "frame" | "walletConnect";
+export type WalletType =
+  | ""
+  | "metamask"
+  | "injected"
+  | "frame"
+  | "walletConnect";
 
 async function getWalletSigner(walletType: WalletType): Promise<JsonRpcSigner> {
   if (walletType === "metamask") {

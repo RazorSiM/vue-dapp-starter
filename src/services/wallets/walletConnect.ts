@@ -3,10 +3,7 @@ import type WalletConnectProvider from "@walletconnect/web3-provider";
 const WalletConnectChunk = () => import("@walletconnect/web3-provider");
 let alreadyEnabled = false;
 
-const initWalletConnectProvider = async (network: string) => {
-  const rpcObject: { [key: number]: string } = {};
-
-  console.log(rpcObject);
+const initWalletConnectProvider = async () => {
   const provider = (await WalletConnectChunk()).default;
   return new provider({
     infuraId: import.meta.env.VITE_INFURA_KEY,
@@ -19,16 +16,20 @@ const enableWalletConnectProvider = async (provider: WalletConnectProvider) => {
     // Subscribe to accounts change
     provider.on("accountsChanged", (accounts: string[]) => {
       console.log(accounts);
+      window.location.reload();
     });
 
     // Subscribe to chainId change
     provider.on("chainChanged", (chainId: number) => {
       console.log(chainId);
+      window.location.reload();
     });
 
     // Subscribe to session disconnection
     provider.on("disconnect", (code: number, reason: string) => {
       console.log(code, reason);
+      localStorage.clear();
+      window.location.reload();
     });
   }
 
