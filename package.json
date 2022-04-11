@@ -75,7 +75,7 @@
     "vite": "^2.7.7",
     "vite-plugin-windicss": "^1.6.1",
     "vue-eslint-parser": "^8.0.0",
-    "vue-tsc": "^0.31.1",
+    "vue-tsc": "^0.34.3",
     "windicss": "^3.4.1"
   }
 }
